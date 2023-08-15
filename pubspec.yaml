@@ -44,6 +44,14 @@ dependencies:
   fluttertoast: ^8.2.2
 
   fluttertoast: ^8.0.8
+  get: ^4.6.5
+  firebase_storage: ^11.2.5
+  image_picker: ^1.0.1
+  line_awesome_flutter: ^2.0.0
+  flutter_masked_text: ^0.8.0
+  intl: ^0.18.1
+  firebase_database: ^10.2.4
+  file_picker: ^5.2.2
 
 
 

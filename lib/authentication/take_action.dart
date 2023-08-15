@@ -4,6 +4,8 @@ import 'package:taskmate/authentication/log_in.dart';
 import 'package:taskmate/authentication/sign_up.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
+import 'package:taskmate/profile/client/profile_client.dart';
+import 'package:taskmate/profile/freelancer/profile_freelancer.dart';
 
 class TakeAction extends StatefulWidget {
   const TakeAction({super.key});
@@ -83,8 +85,7 @@ class _TakeActionState extends State<TakeAction> {
                                     isHire = false;
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                        const CreateMyAccount1(),
+                                        builder: (context) => const ProfileFreelancer(),
                                       ),
                                     );
                                   });
@@ -160,8 +161,7 @@ class _TakeActionState extends State<TakeAction> {
                                   });
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                      const CreateMyAccount1(),
+                                      builder: (context) => const ProfileClient(),
                                     ),
                                   );
                                 },

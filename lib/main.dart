@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:taskmate/profile/client/profile_client.dart';
+import 'package:taskmate/profile/client/user_repository1.dart';
+import 'package:taskmate/profile/freelancer/profile_freelancer.dart';
+import 'package:taskmate/profile/freelancer/profile_freelancer2.dart';
+import 'package:taskmate/profile/freelancer/profile_freelancer3.dart';
+import 'package:taskmate/profile/freelancer/user_repository.dart';
 import 'firebase_options.dart';
 //imported pages
 import 'package:taskmate/authentication/splash_screen.dart';
-
 import 'package:taskmate/authentication/log_in.dart';
 import 'package:taskmate/authentication/take_action.dart';
 import 'package:taskmate/authentication/sign_up.dart';
@@ -18,6 +25,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Get.put(UserRepository1());
+  Get.put(UserRepository());
+
 
   runApp(
     const Taskmate(),
@@ -32,8 +42,9 @@ class Taskmate extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: "Poppins"),
-      home: const SafeArea(
-        child: SplashScreen(),
+      home:  SafeArea(
+        child: ProfileFreelancer(),
+
       ),
     );
   }

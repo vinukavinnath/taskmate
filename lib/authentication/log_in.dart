@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:taskmate/authentication/sign_up.dart';
-<<<<<<< HEAD
-import 'package:taskmate/authentication/take_action.dart';
-=======
+
+import 'package:taskmate/components/maintenance_page.dart';
+
+
 
 import 'package:taskmate/components/maintenance_page.dart';
 
 import 'package:taskmate/authentication/take_action.dart';
 
->>>>>>> c40e947a7d8f91774784ae9ce1efd6ef7d06e544
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
-import 'package:taskmate/home_page.dart';
+// import 'package:taskmate/home_page.dart';
 import 'package:taskmate/components/snackbar.dart';
-import 'package:taskmate/main.dart';
+import 'package:taskmate/jobs.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -59,9 +57,27 @@ class _LoginState extends State<Login> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<void> handleSignIn(BuildContext context) async {
+    UserCredential user = await signInWithGoogle();
+
+    if (user != null) {
+      // Navigate to the desired route after successful sign-in
+      // Replace '/home' with your desired route
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const Jobs(),
+        ),
+      );
+    } else {
+      // Handle the case when Google Sign-In is cancelled or fails
+      // You might show an error message or take appropriate action
+    }
+  }
+
 //Method for Sign in with email and password
   void signInWithEmailAndPassword(String email, String password) async {
     try {
+
       UserCredential userCredential =
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
@@ -78,11 +94,12 @@ class _LoginState extends State<Login> {
         fontSize: 16.0,
       );
 
+
       // Sign-in successful, handle the user object or navigate to the next screen.
 
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const Jobs(),
         ),
       );
     } on FirebaseAuthException catch (e) {
@@ -336,7 +353,7 @@ class _LoginState extends State<Login> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        signInWithGoogle();
+                                        handleSignIn(context);
                                       },
                                       child: Row(
                                         mainAxisAlignment:
@@ -376,17 +393,14 @@ class _LoginState extends State<Login> {
                                           BorderRadius.circular(16.0),
                                         ),
                                       ),
-<<<<<<< HEAD
-                                      onPressed: ()  {
 
-=======
                                       onPressed: () {
                                         showDialog(
                                             context: context,
                                             builder: (context) {
                                               return const MaintenancePage();
                                             });
->>>>>>> c40e947a7d8f91774784ae9ce1efd6ef7d06e544
+
                                       },
                                       child: Row(
                                         mainAxisAlignment:
@@ -420,14 +434,15 @@ class _LoginState extends State<Login> {
                                   const BottomSubText('Create a'),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pushReplacement(
+                                      Navigator.of(context).push(
                                         MaterialPageRoute(
+
+                                          builder: (context) => const SignUp(),
+
                                           builder: (context) =>
-<<<<<<< HEAD
-                                          const TakeAction(),
-=======
+
                                               const TakeAction(),
->>>>>>> c40e947a7d8f91774784ae9ce1efd6ef7d06e544
+
                                         ),
                                       );
                                     },

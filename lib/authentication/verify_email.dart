@@ -1,9 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:taskmate/constants.dart';
 
-class VerifyEmail extends StatelessWidget {
+class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
+
+  @override
+  State<VerifyEmail> createState() => _VerifyEmailState();
+}
+
+class _VerifyEmailState extends State<VerifyEmail> {
+  String? email;
+
+  // Inside a function or wherever you need to access the current user's email
+  void getCurrentUserEmail() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      email = user.email!;
+    }
+  }
+
+  @override
+  void initState() {
+    getCurrentUserEmail();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +48,8 @@ class VerifyEmail extends StatelessWidget {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const <Widget>[
-                Padding(
+              children: <Widget>[
+                const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
                     'Verify your email address',
@@ -37,10 +60,10 @@ class VerifyEmail extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'We have just send email verification link to your emailaddress@gmail.com.',
+                  'We have just send email verification link to your $email.',
                   textAlign: TextAlign.center,
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text(
                     'Please check email and click on the link provided to verify your address.',

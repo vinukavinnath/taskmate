@@ -1,12 +1,35 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:taskmate/authentication/log_in.dart';
 
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
 import 'package:taskmate/authentication/create_my_account_1.dart';
 
+import '../components/maintenance_page.dart';
+
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
+
+  //Method for Google Authentication
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +97,7 @@ class SignUp extends StatelessWidget {
                                     vertical: 20.0, horizontal: 28.0),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) =>
                                         const CreateMyAccount1(),
@@ -159,7 +182,9 @@ class SignUp extends StatelessWidget {
                                           BorderRadius.circular(16.0),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        signInWithGoogle();
+                                      },
                                       child: Row(
                                         mainAxisAlignment:
                                         MainAxisAlignment.center,
@@ -198,7 +223,13 @@ class SignUp extends StatelessWidget {
                                           BorderRadius.circular(16.0),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return const MaintenancePage();
+                                            });
+                                      },
                                       child: Row(
                                         mainAxisAlignment:
                                         MainAxisAlignment.center,
