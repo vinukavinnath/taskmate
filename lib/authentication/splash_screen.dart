@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:taskmate/authentication/get_started.dart';
-import 'package:taskmate/home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,11 +26,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF4F7F9),
-      body: Center(
-        child: Image(
-          image: AssetImage('images/TaskMateLogo_Dark.png'),
+    return const SafeArea(
+      child:  Scaffold(
+        backgroundColor: Color(0xFFF4F7F9),
+        body: Center(
+          child: Image(
+            image: AssetImage('images/TaskMateLogo_Dark.webp'),
+          ),
         ),
       ),
     );

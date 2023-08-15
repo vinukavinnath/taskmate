@@ -41,6 +41,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  camera:
+    dependency: "direct main"
+    description:
+      name: camera
+      sha256: b4cede7c66f44fa476272d21bfe143d5f32e75de1ea56f737e3eaf982da23bab
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.5+3"
+  camera_android:
+    dependency: transitive
+    description:
+      name: camera_android
+      sha256: "61d62676708f187fb89fb14b371f87470343ba3cb26d08fc358e4f8a18e13150"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.8+6"
+  camera_avfoundation:
+    dependency: transitive
+    description:
+      name: camera_avfoundation
+      sha256: "332747f20cf911980e38c8442108102d4456752711781108fda237635baf362c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.13+3"
+  camera_platform_interface:
+    dependency: transitive
+    description:
+      name: camera_platform_interface
+      sha256: "60fa0bb62a4f3bf3a7c413e31e4cd01b69c779ccc8e4668904a24581b86c316b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.1"
+  camera_web:
+    dependency: transitive
+    description:
+      name: camera_web
+      sha256: "894df2a4e9ddd77ffecee9553d5980eeabb8bf09d98e53934859e67dc367933b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.2+1"
   characters:
     dependency: transitive
     description:
@@ -137,6 +177,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  external_app_launcher:
+    dependency: "direct main"
+    description:
+      name: external_app_launcher
+      sha256: fb55cddd706c62ede11056750d5e018ef379820e09739e967873211dd537d833
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -161,6 +209,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.3.1"
+
   file_selector_linux:
     dependency: transitive
     description:
@@ -193,6 +242,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3"
+
   firebase_auth:
     dependency: "direct main"
     description:
@@ -310,6 +360,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+
   flutter_masked_text:
     dependency: "direct main"
     description:
@@ -318,6 +369,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.8.0"
+
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -360,6 +412,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  google_nav_bar:
+    dependency: "direct main"
+    description:
+      name: google_nav_bar
+      sha256: "1c8e3882fa66ee7b74c24320668276ca23affbd58f0b14a24c1e5590f4d07ab0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.6"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -629,6 +689,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  stream_transform:
+    dependency: transitive
+    description:
+      name: stream_transform
+      sha256: "14a00e794c7c11aa145a170587321aedce29769c08d7f58b1d141da75e3b1c6f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   string_scanner:
     dependency: transitive
     description:

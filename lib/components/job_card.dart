@@ -29,6 +29,8 @@ class JobCard extends StatefulWidget {
 }
 
 class _JobCardState extends State<JobCard> {
+  void getTime() {}
+
   @override
   Widget build(BuildContext context) {
     CollectionReference projects =
@@ -53,66 +55,35 @@ class _JobCardState extends State<JobCard> {
                 margin:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                 padding:
-                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 9.0),
                 width: widget.screenWidth,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16.0),
-                  border: Border.all(color: kOceanBlueColor, width: 3.0),
+                  border: Border.all(color: kDeepBlueColor, width: 1.0),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Text('${data['title']}', style: kJobCardTitleTextStyle),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Budget LKR.${data['budget']}',
+                            style: kJobCardDescriptionTextStyle,
+                          ),
+                          Text(
+                            '${data['bids']} bids',
+                            style: kJobCardDescriptionTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
                     Text(
-                      '${data['title']}',
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        const Text('Posted by : '),
-                        Text('${data['username']}'),
-                      ],
-                    ),
-//Post Date goes here
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const <Widget>[
-                          Icon(Icons.schedule),
-                          Text('  Posted on : '),
-// Text('$postedOn'),
-                        ],
-                      ),
-                    ),
-//Price goes here
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Icon(Icons.attach_money),
-                          const Text('  Price : '),
-                          Text('${data['price']}'),
-                          const Text(' LKR'),
-                        ],
-                      ),
-                    ),
-//Duration goes here
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Icon(Icons.timelapse),
-                          const Text('  Duration : '),
-                          Text('${data['duration']}'),
-                          const Text(' Days'),
-                        ],
-                      ),
+                      '${data['description']}',
+                      style: kJobCardDescriptionTextStyle,
                     ),
                   ],
                 ),

@@ -1,6 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:taskmate/authentication/take_action.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/components/dark_main_button.dart';
+import 'package:taskmate/components/light_main_button.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:taskmate/components/snackbar.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -10,134 +15,151 @@ class VerifyEmail extends StatefulWidget {
 }
 
 class _VerifyEmailState extends State<VerifyEmail> {
-  String? email;
+  String? _email;
 
-  // Inside a function or wherever you need to access the current user's email
-  void getCurrentUserEmail() {
+  @override
+  void initState() {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
 
     if (user != null) {
-      email = user.email!;
+      _email = user.email!;
+    }
+    super.initState();
+  }
+
+//Will check whether user is verified
+  void checkEmailVerification() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      await user.reload(); // Reload user data to get the latest information
+      if (user.emailVerified) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const TakeAction(),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          CustomSnackBar('User\'s email is not verified.'),
+        );
+      }
+    }
+  }
+
+//Will send the verification mail again
+  void resendVerificationEmail() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      try {
+        await user.sendEmailVerification();
+        ScaffoldMessenger.of(context).showSnackBar(
+          CustomSnackBar('Verification email sent successfully'),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          CustomSnackBar('Error sending verification email'),
+        );
+      }
     }
   }
 
   @override
-  void initState() {
-    getCurrentUserEmail();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    final double screenHeight = screenSize.height;
-    final double screenWidth = screenSize.width;
+    final double screenWidth = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: SizedBox(
-        width: screenHeight,
-        height: screenHeight,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 4,
-              child: Image.asset('images/Mailbox.png'),
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          // height: screenHeight,
+          // width: screenWidth,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              repeat: ImageRepeat.repeat,
+              image: AssetImage('images/noise_image.webp'),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    'Verify your email address',
-                    style: TextStyle(
-                        color: kDeepBlueColor,
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold),
-                  ),
+          ),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
+                child: Text(
+                  'Verify Your Email Address',
+                  textAlign: TextAlign.center,
+                  style: kHeadingTextStyle.copyWith(height: 1.2),
                 ),
-                Text(
-                  'We have just send email verification link to your $email.',
+              ),
+              const Expanded(
+                flex: 1,
+                child: Image(
+                  image: AssetImage('images/mailbox.webp'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  children: <Widget>[
+                    const Text(
+                      'We have just send email verification link to your ',
+                      style: kTextStyle,
+                    ),
+                    Text(
+                      '$_email',
+                      style: kTextStyle.copyWith(color: kDeepBlueColor),
+                    ),
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                    const Text(
+                      'Please check email and click on the link provided to verify your address.',
+                      textAlign: TextAlign.center,
+                      style: kTextStyle,
+                    ),
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                    DarkMainButton(
+                        title: 'Go to Email Inbox',
+                        process: () async {
+                          await LaunchApp.openApp(
+                              androidPackageName: 'com.google.android.gm',
+                              openStore: true);
+                        },
+                        screenWidth: screenWidth),
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'If you haven’t received the link yet, please click on resend button',
+                  style: kTextStyle,
                   textAlign: TextAlign.center,
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Please check email and click on the link provided to verify your address.',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-            //"Go to Email Inbox" button goes here
-            Container(
-              width: screenWidth,
-              //Margin of the button
-              margin:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 28.0),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kDeepBlueColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    'Go to Email Inbox',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Column(
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'If you haven’t received the link yet, please click on resend button',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  //"Resend" button goes here
-                  Container(
-                    width: screenWidth,
-                    //Margin of the button
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 28.0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kOceanBlueColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Resend',
-                          style: TextStyle(
-                              fontSize: 15.0,
-                              color: kDeepBlueColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              LightMainButton(
+                  title: 'Resend',
+                  process: () {
+                    resendVerificationEmail();
+                  },
+                  screenWidth: screenWidth),
+              LightMainButton(
+                title: 'Continue',
+                process: () {
+                  checkEmailVerification();
+                },
+                screenWidth: screenWidth,
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 60.0,
+              ),
+            ],
+          ),
         ),
       ),
     );

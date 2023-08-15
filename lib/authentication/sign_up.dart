@@ -7,10 +7,36 @@ import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
 import 'package:taskmate/authentication/create_my_account_1.dart';
 
-import '../components/maintenance_page.dart';
+import 'package:taskmate/components/maintenance_page.dart';
+import 'package:taskmate/components/dark_main_button.dart';
+
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
+
+  // void _showCustomDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return CustomAlertDialog(
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             // Add your alert dialog content here
+  //             Text('Your Alert Title'),
+  //             SizedBox(height: 10),
+  //             Text('Your Alert Message'),
+  //             SizedBox(height: 20),
+  //             ElevatedButton(
+  //               onPressed: () => Navigator.of(context).pop(),
+  //               child: Text('Close'),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   //Method for Google Authentication
   Future<UserCredential> signInWithGoogle() async {
@@ -36,55 +62,59 @@ class SignUp extends StatelessWidget {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
 
-    return Scaffold(
-      backgroundColor: kAshWhiteColor,
-      body: Container(
-        decoration: const BoxDecoration(color: kDeepBlueColor),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: Image.asset('images/TaskMateLogo_Light.png'),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: kAshWhiteColor,
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage('images/background/signup.webp'),
             ),
-            Expanded(
-              flex: 5,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.4),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(45.0),
-                        topRight: Radius.circular(45.0),
+          ),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Image.asset('images/taskmate_logo_light.webp'),
+              ),
+              Expanded(
+                flex: 5,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.4),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(45.0),
+                          topRight: Radius.circular(45.0),
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 12,
-                    bottom: 0,
-                    child: Container(
-                      width: screenWidth,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('images/noise_image.png'),
-                          repeat: ImageRepeat.repeat,
+                    Positioned(
+                      top: 12,
+                      bottom: 0,
+                      child: Container(
+                        width: screenWidth,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('images/noise_image.webp'),
+                            repeat: ImageRepeat.repeat,
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20.0),
+                            topRight: Radius.circular(20.0),
+                          ),
                         ),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: ListView(
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              //"Sign up & Find your next Gig" text goes here
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                  horizontal: 16.0,
+                        child: ListView(
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 30.0,
                                 ),
+
                                 child: Text(
                                   'Sign up & Find Your Next Gig',
                                   textAlign: TextAlign.center,
@@ -180,13 +210,23 @@ class SignUp extends StatelessWidget {
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                           BorderRadius.circular(16.0),
+
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: kDeepBlueColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
                                       ),
-                                      onPressed: () {
-                                        signInWithGoogle();
-                                      },
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      //Button icon and Text goes here
                                       child: Row(
                                         mainAxisAlignment:
+
                                         MainAxisAlignment.center,
                                         crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -197,18 +237,19 @@ class SignUp extends StatelessWidget {
                                           ),
                                           const SizedBox(
                                             width: 8.0,
+
                                           ),
-                                          const Text(
-                                            'Google',
+                                          Text(
+                                            'Continue with Email or Mobile',
                                             style: TextStyle(
-                                                color: kDeepBlueColor,
-                                                fontWeight: FontWeight.bold,
+                                                color: kBrilliantWhite,
                                                 fontSize: 15.0),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
+
                                   //"Facebook" Signup Button
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -242,52 +283,151 @@ class SignUp extends StatelessWidget {
                                           ),
                                           const SizedBox(
                                             width: 8.0,
+
                                           ),
-                                          const Text(
-                                            'Facebook',
-                                            style: TextStyle(
-                                                color: kDeepBlueColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15.0),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              //Bottom most row of the screen
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const BottomSubText('Already registered?'),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) => const Login(),
                                         ),
-                                      );
-                                    },
-                                    child: const Text(
-                                      'Log In',
-                                      style: TextStyle(
-                                        color: kAmberColor,
+                                        onPressed: () {
+                                          signInWithGoogle();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Image.asset(
+                                              'icons/google.png',
+                                              width: 25.0,
+                                            ),
+                                            const SizedBox(
+                                              width: 8.0,
+                                            ),
+                                            const Text(
+                                              'Google',
+                                              style: TextStyle(
+                                                  color: kDeepBlueColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.0),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                    //"Facebook" Signup Button
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12.0, horizontal: 24.0),
+                                          backgroundColor: kLightBlueColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return MaintenancePage(
+                                                [
+                                                  const Image(
+                                                    image: AssetImage(
+                                                        'images/gear.webp'),
+                                                  ),
+                                                  Text(
+                                                    'We’re',
+                                                    style: kSubHeadingTextStyle
+                                                        .copyWith(height: 0.5),
+                                                  ),
+                                                  const Text(
+                                                    'Under Maintenance',
+                                                    style: kSubHeadingTextStyle,
+                                                  ),
+                                                  const Padding(
+                                                    padding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 8.0),
+                                                    child: Text(
+                                                      'Please check back soon just putting little touch up on some pretty updates.',
+                                                      style: kTextStyle,
+                                                      textAlign:
+                                                      TextAlign.center,
+                                                    ),
+                                                  ),
+                                                  DarkMainButton(
+                                                      title: 'Close',
+                                                      process: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      screenWidth: screenWidth)
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Image.asset(
+                                              'icons/facebook.png',
+                                              width: 25.0,
+                                            ),
+                                            const SizedBox(
+                                              width: 8.0,
+                                            ),
+                                            const Text(
+                                              'Facebook',
+                                              style: TextStyle(
+                                                  color: kDeepBlueColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                //Bottom most row of the screen
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const BottomSubText('Already registered?'),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (context) => const Login(),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text(
+                                        'Log In',
+                                        style: TextStyle(
+                                          color: kAmberColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
