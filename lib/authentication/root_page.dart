@@ -4,6 +4,7 @@ import 'package:taskmate/authentication/get_started.dart';
 
 import 'package:taskmate/authentication/sign_up.dart';
 import 'package:taskmate/authentication/log_in.dart';
+import 'package:taskmate/onboarding/onboarding.dart';
 
 class RootPage extends StatelessWidget {
   const RootPage({super.key});
@@ -17,7 +18,7 @@ class RootPage extends StatelessWidget {
           if (snapshot.hasData) {
             return const Login();
           } else {
-            return const GetStarted();
+            return const Onboarding();
           }
         },
       ),
