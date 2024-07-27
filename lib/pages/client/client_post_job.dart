@@ -3,15 +3,9 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:taskmate/client_home_page.dart';
 import 'package:taskmate/components/attachment_card.dart';
-
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_textfield.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_title.dart';
@@ -34,16 +28,6 @@ class ClientPostJob extends StatefulWidget {
 }
 
 class _ClientPostJobState extends State<ClientPostJob> {
-  final recorder = FlutterSoundRecorder();
-  bool isRecorderReady = false;
-
-  var audioFile;
-
-  // final audioPlayer = AudioPlayer();
-  // bool isPlaying = false;
-  // Duration duration = Duration.zero;
-  // Duration position = Duration.zero;
-
   final formKey = GlobalKey<FormState>();
   List<String> _skills = [];
   String _skillsText = '';
@@ -67,20 +51,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
     super.dispose();
   }
 
-  Future record() async {
-    if (!isRecorderReady) return;
-    await recorder.startRecorder(toFile: 'audio');
-  }
-
-  Future stop() async {
-    if (!isRecorderReady) return;
-    final path = await recorder.stopRecorder();
-    setState(() {
-      audioFile = File(path!);
-      print('Recorded voice: $audioFile');
-    });
-  }
-
   void selectService(String serviceName) {
     setState(() {
       _skills.add(serviceName);
@@ -90,7 +60,10 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
   Future<void> uploadFile(int imageNumber) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png'],
+      );
       if (result != null) {
         File selectedImage = File(result.files.single.path!);
         setState(() {
@@ -162,32 +135,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
     } catch (e) {
       // Handle any errors that occur
     }
-  }
-
-  Future initRecorder() async {
-    final micStatus = await Permission.microphone.request();
-    final storageStatus = await Permission.storage.request();
-    if (micStatus != PermissionStatus.granted ||
-        storageStatus != PermissionStatus.granted) {
-      throw Exception('Microphone permission not granted');
-    }
-
-    await recorder.openRecorder();
-    isRecorderReady = true;
-    recorder.setSubscriptionDuration(
-      const Duration(milliseconds: 500),
-    );
-  }
-
-  @override
-  void initState() {
-    try {
-      initRecorder();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(e.toString()));
-    }
-
-    super.initState();
   }
 
   @override
@@ -502,9 +449,21 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       controller: budgetController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixText: 'LKR  ',
-                        prefixStyle: const TextStyle(
-                          color: kDeepBlueColor,
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.only(
+                            left: 10.0,
+                            right: 5.0,
+                          ),
+                          child: Text(
+                            'LKR',
+                            style: TextStyle(
+                              color: kDarkGreyColor,
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
                         ),
                         contentPadding: const EdgeInsets.all(10.0),
                         hintText: '1000-4500',
@@ -536,11 +495,11 @@ class _ClientPostJobState extends State<ClientPostJob> {
                     height: 12.0,
                   ),
                   const UserDataGatherTitle(
-                    title: 'Attachments',
+                    title: 'Add a Sketch of your Idea',
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: InkWell(
+                    child: GestureDetector(
                       onTap: () {
                         uploadFile(1);
                       },
@@ -550,17 +509,62 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                 _selectedImage1!,
                                 fit: BoxFit.cover, // Adjust the fit as needed
                               )
-                            : Container(), // Empty container if _selectedImage2 is null
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'Tap to upload a file',
+                                    style: TextStyle(
+                                      color: kJetBlack,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8.0), // Adjust the space between text and icon as needed
+                                  Icon(
+                                    Icons.upload_file,
+                                    color: kJetBlack,
+                                  ),
+                                ],
+                              ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
-                  SizedBox(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedImage1 = null;
+                          });
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20.0), // Adjust the radius as needed
+                          ),
+                          side: const BorderSide(
+                              color:
+                                  kJetBlack), // Optional: customize the border color
+                        ),
+                        child: const Text(
+                          'Remove',
+                          style: TextStyle(
+                            color: kJetBlack,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
                     height: 12,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: InkWell(
-                      onTap: () {
+                    child: GestureDetector(
+                      onTap: () async {
                         uploadFile(2);
                       },
                       child: AttachmentCard(
@@ -569,119 +573,58 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                 _selectedImage2!,
                                 fit: BoxFit.cover, // Adjust the fit as needed
                               )
-                            : Container(), // Empty container if _selectedImage2 is null
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'Tap to upload a file',
+                                    style: TextStyle(
+                                      color: kJetBlack,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8.0), // Adjust the space between text and icon as needed
+                                  Icon(
+                                    Icons.upload_file,
+                                    color: kJetBlack,
+                                  ),
+                                ],
+                              ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
-                  SizedBox(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedImage2 = null;
+                          });
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20.0), // Adjust the radius as needed
+                          ),
+                          side: BorderSide(
+                              color:
+                              kJetBlack), // Optional: customize the border color
+                        ),
+                        child: const Text(
+                          'Remove',
+                          style: TextStyle(
+                            color: kJetBlack,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
                     height: 12.0,
                   ),
-                  // const UserDataGatherTitle(
-                  //   title: 'Express your Requirements with Voice',
-                  // ),
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Container(
-                  //     margin: const EdgeInsets.symmetric(
-                  //       horizontal: 16.0,
-                  //     ),
-                  //     padding: const EdgeInsets.all(
-                  //       8.0,
-                  //     ),
-                  //     width: screenWidth,
-                  //     decoration: BoxDecoration(
-                  //       border: Border.all(color: kDeepBlueColor, width: 2.0),
-                  //       borderRadius: BorderRadius.circular(20.0),
-                  //     ),
-                  //     child: Column(
-                  //       children: [
-                  //         StreamBuilder<RecordingDisposition>(
-                  //             stream: recorder.onProgress,
-                  //             builder: (context, snapshot) {
-                  //               final duration = snapshot.hasData
-                  //                   ? snapshot.data!.duration
-                  //                   : Duration.zero;
-                  //               String twoDigits(int n) =>
-                  //                   n.toString().padLeft(2, '0');
-                  //               final twoDigitMinutes =
-                  //                   twoDigits(duration.inMinutes.remainder(60));
-                  //               final twoDigitSeconds =
-                  //                   twoDigits(duration.inSeconds.remainder(60));
-                  //
-                  //               return Text(
-                  //                 '$twoDigitMinutes:$twoDigitSeconds',
-                  //                 style: kHeadingTextStyle,
-                  //               );
-                  //             }),
-                  //         // ElevatedButton.icon(
-                  //         //   onPressed: () async {
-                  //         //     recorder.toggleRecording();
-                  //         //     setState(() {});
-                  //         //   },
-                  //         //   icon:
-                  //         //       isRecording ? Icon(Icons.stop) : Icon(Icons.mic),
-                  //         //   label: isRecording ? Text('Stop') : Text('Record'),
-                  //         // ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           children: [
-                  //             Container(
-                  //               decoration: BoxDecoration(
-                  //                 shape: BoxShape.circle,
-                  //                 color: kDeepBlueColor,
-                  //               ),
-                  //               child: IconButton(
-                  //                 tooltip: recorder.isRecording
-                  //                     ? 'Tap here to Stop'
-                  //                     : 'Tap here to record',
-                  //                 onPressed: () async {
-                  //                   if (recorder.isRecording) {
-                  //                     await stop();
-                  //                   } else {
-                  //                     await record();
-                  //                   }
-                  //                   setState(() {});
-                  //                 },
-                  //                 icon: Icon(
-                  //                   recorder.isRecording
-                  //                       ? Icons.stop
-                  //                       : Icons.mic,
-                  //                   color: kBrilliantWhite,
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //             const SizedBox(
-                  //               width: 10.0,
-                  //             ),
-                  //             // Container(
-                  //             //   decoration: BoxDecoration(
-                  //             //     shape: BoxShape.circle,
-                  //             //     color: kDeepBlueColor,
-                  //             //   ),
-                  //             //   child: IconButton(
-                  //             //     onPressed: () async {
-                  //             //       // await audioPlayer.play(UrlSource('https://file-examples.com/storage/feaade38c1651bd01984236/2017/11/file_example_MP3_700KB.mp3'));
-                  //             //       // setState(() {
-                  //             //       //
-                  //             //       // });
-                  //             //     },
-                  //             //     icon: Icon(
-                  //             //       isPlaying ? Icons.stop : Icons.play_arrow,
-                  //             //       color: kBrilliantWhite,
-                  //             //     ),
-                  //             //   ),
-                  //             // ),
-                  //           ],
-                  //         ),
-                  //         Padding(
-                  //           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //           child: Text(
-                  //               recorder.isRecording ? 'Recording...' : ''),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
                   DarkMainButton(
                     title: 'Post Job Now',
                     process: () {
@@ -733,9 +676,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                         MaterialPageRoute(
                                           builder: (context) => ClientHomePage(
                                             passedIndex: 2,
-                                              // selectedIndex: 2,
-                                              // client: widget.client,
-                                              ),
+                                            // selectedIndex: 2,
+                                            // client: widget.client,
+                                          ),
                                         ),
                                       );
                                     },
@@ -777,7 +720,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
       return downloadURL;
     } catch (e) {
       // Handle errors
-      print("Error uploading image: $e");
     }
 
     return null;
