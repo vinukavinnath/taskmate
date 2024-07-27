@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/client_home_page.dart';
 import 'package:taskmate/components/attachment_card.dart';
 import 'package:taskmate/components/dark_main_button.dart';
@@ -14,6 +16,11 @@ import 'package:taskmate/components/snackbar.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/profile/client/user_model1.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:path/path.dart' as p;
 
 class ClientPostJob extends StatefulWidget {
   const ClientPostJob({
@@ -32,14 +39,28 @@ class _ClientPostJobState extends State<ClientPostJob> {
   List<String> _skills = [];
   String _skillsText = '';
 
+// Audio recording feature
+  final record = AudioRecorder();
+  final player = AudioPlayer();
+  bool _isRecording = false;
+  bool _isPlaying = false;
+  String? recordingPath;
+
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController jobDescriptionController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController dayCountController = TextEditingController();
   final TextEditingController budgetController = TextEditingController();
   final TextEditingController skillController = TextEditingController();
   File? _selectedImage1;
   File? _selectedImage2;
+
+  @override
+  void initState() {
+    super.initState();
+    // Request microphone permission when the widget is initialized
+    requestPermissions();
+  }
 
   @override
   void dispose() {
@@ -80,13 +101,13 @@ class _ClientPostJobState extends State<ClientPostJob> {
   }
 
   Future<void> addJobToFirestore(
-    String jobTitle,
-    String jobDescription,
-    int dayCount,
-    int Percentage,
-    int releaseMoney,
-    int budget,
-  ) async {
+      String jobTitle,
+      String jobDescription,
+      int dayCount,
+      int Percentage,
+      int releaseMoney,
+      int budget,
+      ) async {
     try {
       // Get the current user's UID from FirebaseAuth
       User? user = FirebaseAuth.instance.currentUser;
@@ -99,7 +120,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Get a reference to the Firestore collection
       CollectionReference jobsCollection =
-          FirebaseFirestore.instance.collection('jobs');
+      FirebaseFirestore.instance.collection('jobs');
 
       // Generate a unique job ID (e.g., using a timestamp)
       String timestamp = Timestamp.now().millisecondsSinceEpoch.toString();
@@ -112,9 +133,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Upload images to Firebase Storage and get download URLs
       String? image1Url =
-          await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
+      await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
       String? image2Url =
-          await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+      await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
@@ -136,6 +157,61 @@ class _ClientPostJobState extends State<ClientPostJob> {
       // Handle any errors that occur
     }
   }
+
+// Request microphone permission
+  Future<void> requestPermissions() async {
+    // Check if the permission is already granted
+    var status = await Permission.microphone.status;
+
+    // If the permission is not granted, request it
+    if (!status.isGranted) {
+      await Permission.microphone.request();
+    }
+  }
+
+// Checks for the permission
+  Future<bool> checkPermission() async {
+    var status = await Permission.microphone.status;
+    return status.isGranted;
+  }
+
+// Starts recording
+  Future<void> startRecording() async {
+    bool permissionGranted = await checkPermission();
+    if (permissionGranted) {
+      final Directory appDocumentsDir =
+      await getApplicationDocumentsDirectory();
+      final String filePath = p.join(appDocumentsDir.path, "rec.wav");
+      await record.start(const RecordConfig(), path: filePath);
+      setState(() {
+        _isRecording = true;
+        recordingPath = null;
+      });
+    } else {
+      if (context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        CusSnackBar(
+          backColor: kWarningRedColor,
+          time: 3,
+          title: 'You don\'t have access to record voice',
+          icon: Icons.dangerous,
+        ),
+      );
+    }
+  }
+
+// Stops recording
+  Future<void> stopRecording() async {
+    String? filePath = await record.stop();
+    if (filePath != null) {
+      setState(() {
+        _isRecording = false;
+        recordingPath = filePath;
+      });
+    }
+  }
+
+// Uploads audio
 
   @override
   Widget build(BuildContext context) {
@@ -506,28 +582,28 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       child: AttachmentCard(
                         cardChild: _selectedImage1 != null
                             ? Image.file(
-                                _selectedImage1!,
-                                fit: BoxFit.cover, // Adjust the fit as needed
-                              )
+                          _selectedImage1!,
+                          fit: BoxFit.cover, // Adjust the fit as needed
+                        )
                             : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Text(
-                                    'Tap to upload a file',
-                                    style: TextStyle(
-                                      color: kJetBlack,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          8.0), // Adjust the space between text and icon as needed
-                                  Icon(
-                                    Icons.upload_file,
-                                    color: kJetBlack,
-                                  ),
-                                ],
-                              ), // Empty container if _selectedImage2 is null
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Tap to upload a file',
+                              style: TextStyle(
+                                color: kJetBlack,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(
+                                width:
+                                8.0), // Adjust the space between text and icon as needed
+                            Icon(
+                              Icons.upload_file,
+                              color: kJetBlack,
+                            ),
+                          ],
+                        ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
@@ -547,7 +623,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
                           ),
                           side: const BorderSide(
                               color:
-                                  kJetBlack), // Optional: customize the border color
+                              kJetBlack), // Optional: customize the border color
                         ),
                         child: const Text(
                           'Remove',
@@ -570,28 +646,28 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       child: AttachmentCard(
                         cardChild: _selectedImage2 != null
                             ? Image.file(
-                                _selectedImage2!,
-                                fit: BoxFit.cover, // Adjust the fit as needed
-                              )
+                          _selectedImage2!,
+                          fit: BoxFit.cover, // Adjust the fit as needed
+                        )
                             : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Text(
-                                    'Tap to upload a file',
-                                    style: TextStyle(
-                                      color: kJetBlack,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          8.0), // Adjust the space between text and icon as needed
-                                  Icon(
-                                    Icons.upload_file,
-                                    color: kJetBlack,
-                                  ),
-                                ],
-                              ), // Empty container if _selectedImage2 is null
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Tap to upload a file',
+                              style: TextStyle(
+                                color: kJetBlack,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(
+                                width:
+                                8.0), // Adjust the space between text and icon as needed
+                            Icon(
+                              Icons.upload_file,
+                              color: kJetBlack,
+                            ),
+                          ],
+                        ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
@@ -624,6 +700,55 @@ class _ClientPostJobState extends State<ClientPostJob> {
                   ),
                   const SizedBox(
                     height: 12.0,
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: kDeepBlueColor,
+                    ),
+                    child: Center(
+                      child: IconButton(
+                        tooltip: _isRecording
+                            ? 'Tap here to Stop'
+                            : 'Tap here to record',
+                        onPressed: () async {
+                          if (_isRecording) {
+                            await stopRecording();
+                          } else {
+                            await startRecording();
+                          }
+                        },
+                        icon: Icon(
+                          _isRecording ? Icons.stop : Icons.mic,
+                          color: kBrilliantWhite,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      child: recordingPath != null
+                          ? MaterialButton(
+                        onPressed: () async {
+                          if (player.playing) {
+                            player.stop();
+                            setState(() {
+                              _isPlaying = false;
+                            });
+                          } else {
+                            await player.setFilePath(recordingPath!);
+                            player.play();
+                            setState(() {
+                              _isPlaying = true;
+                            });
+                          }
+                        },
+                        child: _isPlaying
+                            ? const Text("Stop")
+                            : const Text("Play"),
+                      )
+                          : const Text('No recordings'),
+                    ),
                   ),
                   DarkMainButton(
                     title: 'Post Job Now',
@@ -707,7 +832,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
     try {
       Reference storageReference =
-          FirebaseStorage.instance.ref().child('images/$imageName');
+      FirebaseStorage.instance.ref().child('images/$imageName');
       UploadTask uploadTask = storageReference.putFile(image);
       await uploadTask.whenComplete(() async {
         // Wait for the upload to complete and then return the download URL
