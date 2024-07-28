@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:taskmate/authentication/get_started.dart';
+import 'package:taskmate/authentication/log_in.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/dashboard_item.dart';
 import 'package:taskmate/dashboard/client/about_us.dart';
@@ -14,7 +14,6 @@ import 'package:taskmate/dashboard/client/transaction_history.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 
-import '../../profile/client/user_model1.dart';
 
 class Dashboard extends StatefulWidget {
   // final UserModel1 client; // Add this line
@@ -49,7 +48,7 @@ class _DashboardState extends State<Dashboard> {
   void navigateToBalance() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Balance(),
+        builder: (context) => const Balance(),
       ),
     );
   }
@@ -57,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
   void navigateToTransactionHistory() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TransactionHistory(),
+        builder: (context) => const TransactionHistory(),
       ),
     );
   }
@@ -65,7 +64,7 @@ class _DashboardState extends State<Dashboard> {
   void navigateToHelpSupport() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => HelpSupport(),
+        builder: (context) => const HelpSupport(),
       ),
     );
   }
@@ -73,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
   void navigateToInviteFriends() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => InviteFriends(),
+        builder: (context) => const InviteFriends(),
       ),
     );
   }
@@ -81,7 +80,7 @@ class _DashboardState extends State<Dashboard> {
   void navigateToTermsConditions() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TermsConditions(),
+        builder: (context) => const TermsConditions(),
       ),
     );
   }
@@ -89,17 +88,26 @@ class _DashboardState extends State<Dashboard> {
   void navigateToAboutUs() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AboutUs(),
+        builder: (context) => const AboutUs(),
       ),
     );
   }
 
-  void signOut() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const GetStarted(),
-      ),
-    );
+  // void signOut() {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => const GetStarted(),
+  //     ),
+  //   );
+  // }
+
+  void signOutUser(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Login()),
+      );
+    }
   }
 
   void updateCompliment() {
@@ -285,7 +293,9 @@ class _DashboardState extends State<Dashboard> {
                 function: navigateToAboutUs,
               ),
               TextButton(
-                onPressed: signOut,
+                onPressed: () {
+                  signOutUser(context);
+                },
                 child: Text(
                   'Logout',
                   style: kJobCardTitleTextStyle.copyWith(
@@ -311,10 +321,7 @@ class _DashboardState extends State<Dashboard> {
 
             KommunicateFlutterPlugin.buildConversation(conversationObject)
                 .then((clientConversationId) {
-              print("Conversation builder success : " +
-                  clientConversationId.toString());
             }).catchError((error) {
-              print("Conversation builder error : " + error.toString());
             });
           },
           backgroundColor: kDeepBlueColor,

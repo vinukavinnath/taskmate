@@ -21,7 +21,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'dart:async';
 
-
 class ClientPostJob extends StatefulWidget {
   const ClientPostJob({
     // required this.client,
@@ -102,7 +101,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
       // Handle errors
     }
   }
-  Future<String?> uploadRecordingToStorage(String recordingPath, String recordingName) async {
+
+  Future<String?> uploadRecordingToStorage(
+      String recordingPath, String recordingName) async {
     try {
       // Get a reference to Firebase Storage
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -122,19 +123,18 @@ class _ClientPostJobState extends State<ClientPostJob> {
       return downloadUrl;
     } catch (e) {
       // Handle any errors that occur during the upload
-      print('Error uploading recording: $e');
       return null;
     }
   }
 
   Future<void> addJobToFirestore(
-    String jobTitle,
-    String jobDescription,
-    int dayCount,
-    int Percentage,
-    int releaseMoney,
-    int budget,
-  ) async {
+      String jobTitle,
+      String jobDescription,
+      int dayCount,
+      int Percentage,
+      int releaseMoney,
+      int budget,
+      ) async {
     try {
       // Get the current user's UID from FirebaseAuth
       User? user = FirebaseAuth.instance.currentUser;
@@ -147,7 +147,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Get a reference to the Firestore collection
       CollectionReference jobsCollection =
-          FirebaseFirestore.instance.collection('jobs');
+      FirebaseFirestore.instance.collection('jobs');
 
       // Generate a unique job ID (e.g., using a timestamp)
       String timestamp = Timestamp.now().millisecondsSinceEpoch.toString();
@@ -160,13 +160,18 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Upload images to Firebase Storage and get download URLs
       String? image1Url =
-          await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
+      await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
       String? image2Url =
-          await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+      await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
-      // Upload the recording to Firebase Storage and get the download URL
-      String? recordingUrl =
-      await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+      // Initialize the recordingUrl as null
+      String? recordingUrl;
+
+      // Check if recordingPath is not null before uploading the recording
+      if (recordingPath != null) {
+        recordingUrl =
+        await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+      }
 
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
@@ -176,19 +181,21 @@ class _ClientPostJobState extends State<ClientPostJob> {
         'dayCount': dayCount,
         'budget': budget,
         'skills': _skills,
-        'image1Url': image1Url,
-        'image2Url': image2Url,
-        'recordingUrl': recordingUrl,
+        'image1Url': image1Url ?? '', // Use an empty string as a default value if null
+        'image2Url': image2Url ?? '', // Use an empty string as a default value if null
+        'recordingUrl': recordingUrl ?? '', // Set to an empty string if no recording URL is available
         'status': 'new', // Set the status to "active"
-        'releaseMoney': 0,
-        'Precentage': 0,
+        'releaseMoney': releaseMoney,
+        'Percentage': Percentage, // Fixed typo from Precentage to Percentage
         'createdAt': FieldValue.serverTimestamp(), // Add the timestamp field
-        // You can add more fields as needed
       });
     } catch (e) {
       // Handle any errors that occur
+      print(e);
     }
   }
+
+
 
 // Request microphone permission
   Future<void> requestPermissions() async {
@@ -289,7 +296,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
     try {
       String fileName = p.basename(filePath);
       Reference storageReference =
-      FirebaseStorage.instance.ref().child('recordings/$fileName');
+          FirebaseStorage.instance.ref().child('recordings/$fileName');
       UploadTask uploadTask = storageReference.putFile(file);
       TaskSnapshot taskSnapshot = await uploadTask;
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
@@ -792,14 +799,16 @@ class _ClientPostJobState extends State<ClientPostJob> {
                     title: 'Explain with a Voice Recording',
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: kDarkGreyColor, // Border color
                         width: 1.0, // Border width
                       ),
-                      borderRadius: BorderRadius.circular(12), // Border radius (optional)
+                      borderRadius:
+                          BorderRadius.circular(12), // Border radius (optional)
                     ),
                     child: Column(
                       children: [
@@ -881,7 +890,8 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                           _isPlaying = false;
                                         });
                                       } else {
-                                        await player.setFilePath(recordingPath!);
+                                        await player
+                                            .setFilePath(recordingPath!);
                                         player.play();
                                         setState(() {
                                           _isPlaying = true;
