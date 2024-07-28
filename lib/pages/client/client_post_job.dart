@@ -128,13 +128,13 @@ class _ClientPostJobState extends State<ClientPostJob> {
   }
 
   Future<void> addJobToFirestore(
-    String jobTitle,
-    String jobDescription,
-    int dayCount,
-    int Percentage,
-    int releaseMoney,
-    int budget,
-  ) async {
+      String jobTitle,
+      String jobDescription,
+      int dayCount,
+      int Percentage,
+      int releaseMoney,
+      int budget,
+      ) async {
     try {
       // Get the current user's UID from FirebaseAuth
       User? user = FirebaseAuth.instance.currentUser;
@@ -147,7 +147,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Get a reference to the Firestore collection
       CollectionReference jobsCollection =
-          FirebaseFirestore.instance.collection('jobs');
+      FirebaseFirestore.instance.collection('jobs');
 
       // Generate a unique job ID (e.g., using a timestamp)
       String timestamp = Timestamp.now().millisecondsSinceEpoch.toString();
@@ -160,13 +160,18 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Upload images to Firebase Storage and get download URLs
       String? image1Url =
-          await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
+      await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
       String? image2Url =
-          await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+      await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
-      // Upload the recording to Firebase Storage and get the download URL
-      String? recordingUrl = await uploadRecordingToStorage(
-          recordingPath!, 'recording_$timestamp');
+      // Initialize the recordingUrl as null
+      String? recordingUrl;
+
+      // Check if recordingPath is not null before uploading the recording
+      if (recordingPath != null) {
+        recordingUrl =
+        await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+      }
 
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
@@ -176,19 +181,21 @@ class _ClientPostJobState extends State<ClientPostJob> {
         'dayCount': dayCount,
         'budget': budget,
         'skills': _skills,
-        'image1Url': image1Url,
-        'image2Url': image2Url,
-        'recordingUrl': recordingUrl,
+        'image1Url': image1Url ?? '', // Use an empty string as a default value if null
+        'image2Url': image2Url ?? '', // Use an empty string as a default value if null
+        'recordingUrl': recordingUrl ?? '', // Set to an empty string if no recording URL is available
         'status': 'new', // Set the status to "active"
-        'releaseMoney': 0,
-        'Precentage': 0,
+        'releaseMoney': releaseMoney,
+        'Percentage': Percentage, // Fixed typo from Precentage to Percentage
         'createdAt': FieldValue.serverTimestamp(), // Add the timestamp field
-        // You can add more fields as needed
       });
     } catch (e) {
       // Handle any errors that occur
+      print(e);
     }
   }
+
+
 
 // Request microphone permission
   Future<void> requestPermissions() async {

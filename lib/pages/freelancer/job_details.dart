@@ -61,13 +61,13 @@ class _JobDetailsState extends State<JobDetails> {
     super.dispose();
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final seconds = duration.inSeconds.remainder(60);
-    return [if (hours > 0) hours, minutes, seconds].map(twoDigits).join(':');
-  }
+  // String _formatDuration(Duration duration) {
+  //   String twoDigits(int n) => n.toString().padLeft(2, '0');
+  //   final hours = duration.inHours;
+  //   final minutes = duration.inMinutes.remainder(60);
+  //   final seconds = duration.inSeconds.remainder(60);
+  //   return [if (hours > 0) hours, minutes, seconds].map(twoDigits).join(':');
+  // }
 
   void congratulateOnPlaceBid() {
     showDialog(
@@ -220,10 +220,10 @@ class _JobDetailsState extends State<JobDetails> {
                       ),
                       Expanded(
                         child: subData['image2Url'] != null &&
-                                subData['image1Url'].isNotEmpty
+                                subData['image2Url'].isNotEmpty
                             ? AttachmentCard(
                                 cardChild: Image.network(
-                                  subData['image1Url'],
+                                  subData['image2Url'],
                                 ),
                               )
                             : const Center(
@@ -242,7 +242,8 @@ class _JobDetailsState extends State<JobDetails> {
                   ),
                 ),
                 Center(
-                  child: _audioUrl != null
+                  child: subData['recordingUrl'] != null &&
+                      subData['recordingUrl'].isNotEmpty
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -370,7 +371,7 @@ class _JobDetailsState extends State<JobDetails> {
                       // )
                     ],
                   )
-                      : const Text("data")
+                      : const Text("No Recording Found")
                 ),
                 Align(
                   alignment: Alignment.center,
