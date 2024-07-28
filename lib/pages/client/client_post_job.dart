@@ -11,16 +11,16 @@ import 'package:taskmate/components/attachment_card.dart';
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_textfield.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_title.dart';
+import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/components/maintenance_page.dart';
-import 'package:taskmate/components/snackbar.dart';
 import 'package:taskmate/constants.dart';
-import 'package:taskmate/profile/client/user_model1.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
+import 'dart:async';
+
 
 class ClientPostJob extends StatefulWidget {
   const ClientPostJob({
@@ -36,8 +36,8 @@ class ClientPostJob extends StatefulWidget {
 
 class _ClientPostJobState extends State<ClientPostJob> {
   final formKey = GlobalKey<FormState>();
-  List<String> _skills = [];
-  String _skillsText = '';
+  final List<String> _skills = [];
+  final String _skillsText = '';
 
 // Audio recording feature
   final record = AudioRecorder();
@@ -45,10 +45,12 @@ class _ClientPostJobState extends State<ClientPostJob> {
   bool _isRecording = false;
   bool _isPlaying = false;
   String? recordingPath;
+  Timer? _timer;
+  Duration _duration = Duration.zero;
 
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController jobDescriptionController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController dayCountController = TextEditingController();
   final TextEditingController budgetController = TextEditingController();
   final TextEditingController skillController = TextEditingController();
@@ -69,6 +71,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
     jobDescriptionController.dispose();
     dayCountController.dispose();
     budgetController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -99,15 +102,39 @@ class _ClientPostJobState extends State<ClientPostJob> {
       // Handle errors
     }
   }
+  Future<String?> uploadRecordingToStorage(String recordingPath, String recordingName) async {
+    try {
+      // Get a reference to Firebase Storage
+      FirebaseStorage storage = FirebaseStorage.instance;
+
+      // Create a reference to the location you want to upload the recording
+      Reference ref = storage.ref().child('recordings').child(recordingName);
+
+      // Upload the recording file
+      UploadTask uploadTask = ref.putFile(File(recordingPath));
+
+      // Wait for the upload to complete
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL of the uploaded recording
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      // Handle any errors that occur during the upload
+      print('Error uploading recording: $e');
+      return null;
+    }
+  }
 
   Future<void> addJobToFirestore(
-      String jobTitle,
-      String jobDescription,
-      int dayCount,
-      int Percentage,
-      int releaseMoney,
-      int budget,
-      ) async {
+    String jobTitle,
+    String jobDescription,
+    int dayCount,
+    int Percentage,
+    int releaseMoney,
+    int budget,
+  ) async {
     try {
       // Get the current user's UID from FirebaseAuth
       User? user = FirebaseAuth.instance.currentUser;
@@ -120,7 +147,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Get a reference to the Firestore collection
       CollectionReference jobsCollection =
-      FirebaseFirestore.instance.collection('jobs');
+          FirebaseFirestore.instance.collection('jobs');
 
       // Generate a unique job ID (e.g., using a timestamp)
       String timestamp = Timestamp.now().millisecondsSinceEpoch.toString();
@@ -133,9 +160,13 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Upload images to Firebase Storage and get download URLs
       String? image1Url =
-      await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
+          await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
       String? image2Url =
-      await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+          await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+
+      // Upload the recording to Firebase Storage and get the download URL
+      String? recordingUrl =
+      await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
 
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
@@ -147,6 +178,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
         'skills': _skills,
         'image1Url': image1Url,
         'image2Url': image2Url,
+        'recordingUrl': recordingUrl,
         'status': 'new', // Set the status to "active"
         'releaseMoney': 0,
         'Precentage': 0,
@@ -180,13 +212,15 @@ class _ClientPostJobState extends State<ClientPostJob> {
     bool permissionGranted = await checkPermission();
     if (permissionGranted) {
       final Directory appDocumentsDir =
-      await getApplicationDocumentsDirectory();
+          await getApplicationDocumentsDirectory();
       final String filePath = p.join(appDocumentsDir.path, "rec.wav");
       await record.start(const RecordConfig(), path: filePath);
       setState(() {
         _isRecording = true;
+        _duration = Duration.zero;
         recordingPath = null;
       });
+      _startTimer();
     } else {
       if (context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -203,6 +237,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 // Stops recording
   Future<void> stopRecording() async {
     String? filePath = await record.stop();
+    _stopTimer();
     if (filePath != null) {
       setState(() {
         _isRecording = false;
@@ -211,7 +246,59 @@ class _ClientPostJobState extends State<ClientPostJob> {
     }
   }
 
+// Deletes recording
+  Future<void> deleteRecording() async {
+    if (recordingPath != null) {
+      File file = File(recordingPath!);
+      if (await file.exists()) {
+        await file.delete();
+        setState(() {
+          recordingPath = null;
+          _isRecording = false;
+          _isPlaying = false;
+        });
+      }
+    }
+  }
+
+// Starts counting time
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _duration = Duration(seconds: _duration.inSeconds + 1);
+      });
+    });
+  }
+
+// Stops counting time
+  void _stopTimer() {
+    _timer?.cancel();
+  }
+
+// Formats recording time
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$twoDigitMinutes:$twoDigitSeconds';
+  }
+
 // Uploads audio
+  Future<String?> uploadFileToFirebase(String filePath) async {
+    File file = File(filePath);
+    try {
+      String fileName = p.basename(filePath);
+      Reference storageReference =
+      FirebaseStorage.instance.ref().child('recordings/$fileName');
+      UploadTask uploadTask = storageReference.putFile(file);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print("File upload error: $e");
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -582,28 +669,28 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       child: AttachmentCard(
                         cardChild: _selectedImage1 != null
                             ? Image.file(
-                          _selectedImage1!,
-                          fit: BoxFit.cover, // Adjust the fit as needed
-                        )
+                                _selectedImage1!,
+                                fit: BoxFit.cover, // Adjust the fit as needed
+                              )
                             : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              'Tap to upload a file',
-                              style: TextStyle(
-                                color: kJetBlack,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            SizedBox(
-                                width:
-                                8.0), // Adjust the space between text and icon as needed
-                            Icon(
-                              Icons.upload_file,
-                              color: kJetBlack,
-                            ),
-                          ],
-                        ), // Empty container if _selectedImage2 is null
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'Tap to upload a file',
+                                    style: TextStyle(
+                                      color: kJetBlack,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8.0), // Adjust the space between text and icon as needed
+                                  Icon(
+                                    Icons.upload_file,
+                                    color: kJetBlack,
+                                  ),
+                                ],
+                              ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
@@ -623,7 +710,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
                           ),
                           side: const BorderSide(
                               color:
-                              kJetBlack), // Optional: customize the border color
+                                  kJetBlack), // Optional: customize the border color
                         ),
                         child: const Text(
                           'Remove',
@@ -646,28 +733,28 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       child: AttachmentCard(
                         cardChild: _selectedImage2 != null
                             ? Image.file(
-                          _selectedImage2!,
-                          fit: BoxFit.cover, // Adjust the fit as needed
-                        )
+                                _selectedImage2!,
+                                fit: BoxFit.cover, // Adjust the fit as needed
+                              )
                             : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              'Tap to upload a file',
-                              style: TextStyle(
-                                color: kJetBlack,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            SizedBox(
-                                width:
-                                8.0), // Adjust the space between text and icon as needed
-                            Icon(
-                              Icons.upload_file,
-                              color: kJetBlack,
-                            ),
-                          ],
-                        ), // Empty container if _selectedImage2 is null
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'Tap to upload a file',
+                                    style: TextStyle(
+                                      color: kJetBlack,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8.0), // Adjust the space between text and icon as needed
+                                  Icon(
+                                    Icons.upload_file,
+                                    color: kJetBlack,
+                                  ),
+                                ],
+                              ), // Empty container if _selectedImage2 is null
                       ),
                     ),
                   ),
@@ -685,9 +772,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
                             borderRadius: BorderRadius.circular(
                                 20.0), // Adjust the radius as needed
                           ),
-                          side: BorderSide(
+                          side: const BorderSide(
                               color:
-                              kJetBlack), // Optional: customize the border color
+                                  kJetBlack), // Optional: customize the border color
                         ),
                         child: const Text(
                           'Remove',
@@ -701,53 +788,113 @@ class _ClientPostJobState extends State<ClientPostJob> {
                   const SizedBox(
                     height: 12.0,
                   ),
-                  Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: kDeepBlueColor,
-                    ),
-                    child: Center(
-                      child: IconButton(
-                        tooltip: _isRecording
-                            ? 'Tap here to Stop'
-                            : 'Tap here to record',
-                        onPressed: () async {
-                          if (_isRecording) {
-                            await stopRecording();
-                          } else {
-                            await startRecording();
-                          }
-                        },
-                        icon: Icon(
-                          _isRecording ? Icons.stop : Icons.mic,
-                          color: kBrilliantWhite,
-                        ),
-                      ),
-                    ),
+                  const UserDataGatherTitle(
+                    title: 'Explain with a Voice Recording',
                   ),
-                  Center(
-                    child: Container(
-                      child: recordingPath != null
-                          ? MaterialButton(
-                        onPressed: () async {
-                          if (player.playing) {
-                            player.stop();
-                            setState(() {
-                              _isPlaying = false;
-                            });
-                          } else {
-                            await player.setFilePath(recordingPath!);
-                            player.play();
-                            setState(() {
-                              _isPlaying = true;
-                            });
-                          }
-                        },
-                        child: _isPlaying
-                            ? const Text("Stop")
-                            : const Text("Play"),
-                      )
-                          : const Text('No recordings'),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: kDarkGreyColor, // Border color
+                        width: 1.0, // Border width
+                      ),
+                      borderRadius: BorderRadius.circular(12), // Border radius (optional)
+                    ),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            _isRecording
+                                ? "Recording: ${_formatDuration(_duration)}"
+                                : recordingPath != null
+                                    ? "Recorded: ${_formatDuration(_duration)}"
+                                    : "Tap Mic button to Record",
+                            style: kSubHeadingTextStyle,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(
+                                8.0,
+                              ),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _isRecording
+                                    ? kOceanBlueColor
+                                    : kDeepBlueColor,
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  tooltip: _isRecording
+                                      ? 'Tap here to Stop'
+                                      : 'Tap here to record',
+                                  onPressed: () async {
+                                    if (_isRecording) {
+                                      await stopRecording();
+                                    } else {
+                                      await startRecording();
+                                    }
+                                  },
+                                  icon: Icon(
+                                    _isRecording ? Icons.stop : Icons.mic,
+                                    color: kBrilliantWhite,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(
+                                8.0,
+                              ),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: recordingPath != null
+                                    ? kWarningRedColor
+                                    : null,
+                              ),
+                              child: IconButton(
+                                tooltip: recordingPath != null
+                                    ? 'Delete recording'
+                                    : null,
+                                onPressed: recordingPath != null
+                                    ? deleteRecording
+                                    : null,
+                                icon: const Icon(Icons.delete),
+                                color: recordingPath != null
+                                    ? kAshWhiteColor
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Center(
+                          child: Container(
+                            child: recordingPath != null
+                                ? LightMainButton(
+                                    process: () async {
+                                      if (player.playing) {
+                                        player.stop();
+                                        setState(() {
+                                          _isPlaying = false;
+                                        });
+                                      } else {
+                                        await player.setFilePath(recordingPath!);
+                                        player.play();
+                                        setState(() {
+                                          _isPlaying = true;
+                                        });
+                                      }
+                                    },
+                                    title: _isPlaying ? "Stop" : "Play",
+                                    screenWidth: screenWidth / 2,
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   DarkMainButton(
@@ -815,7 +962,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       }
                     },
                     screenWidth: screenWidth,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -832,7 +979,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
     try {
       Reference storageReference =
-      FirebaseStorage.instance.ref().child('images/$imageName');
+          FirebaseStorage.instance.ref().child('images/$imageName');
       UploadTask uploadTask = storageReference.putFile(image);
       await uploadTask.whenComplete(() async {
         // Wait for the upload to complete and then return the download URL
