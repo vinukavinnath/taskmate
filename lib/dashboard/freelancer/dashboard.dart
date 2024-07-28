@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 import 'package:taskmate/authentication/get_started.dart';
+import 'package:taskmate/authentication/log_in.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/dashboard_item.dart';
 import 'package:taskmate/dashboard/freelancer/about_us.dart';
@@ -112,12 +113,21 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void signOut() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const GetStarted(),
-      ),
-    );
+  // void signOut() {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => const GetStarted(),
+  //     ),
+  //   );
+  // }
+
+  void signOutUser(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Login()),
+      );
+    }
   }
 
   @override
@@ -287,7 +297,9 @@ class _DashboardState extends State<Dashboard> {
                 function: navigateToAboutUs,
               ),
               TextButton(
-                onPressed: signOut,
+                onPressed: () {
+                  signOutUser(context);
+                },
                 child: Text(
                   'Logout',
                   style: kJobCardTitleTextStyle.copyWith(
