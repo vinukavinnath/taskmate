@@ -21,7 +21,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'dart:async';
 
-
 class ClientPostJob extends StatefulWidget {
   const ClientPostJob({
     // required this.client,
@@ -102,7 +101,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
       // Handle errors
     }
   }
-  Future<String?> uploadRecordingToStorage(String recordingPath, String recordingName) async {
+
+  Future<String?> uploadRecordingToStorage(
+      String recordingPath, String recordingName) async {
     try {
       // Get a reference to Firebase Storage
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -122,7 +123,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
       return downloadUrl;
     } catch (e) {
       // Handle any errors that occur during the upload
-      print('Error uploading recording: $e');
       return null;
     }
   }
@@ -165,8 +165,8 @@ class _ClientPostJobState extends State<ClientPostJob> {
           await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
       // Upload the recording to Firebase Storage and get the download URL
-      String? recordingUrl =
-      await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+      String? recordingUrl = await uploadRecordingToStorage(
+          recordingPath!, 'recording_$timestamp');
 
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
@@ -289,7 +289,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
     try {
       String fileName = p.basename(filePath);
       Reference storageReference =
-      FirebaseStorage.instance.ref().child('recordings/$fileName');
+          FirebaseStorage.instance.ref().child('recordings/$fileName');
       UploadTask uploadTask = storageReference.putFile(file);
       TaskSnapshot taskSnapshot = await uploadTask;
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
@@ -792,14 +792,16 @@ class _ClientPostJobState extends State<ClientPostJob> {
                     title: 'Explain with a Voice Recording',
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: kDarkGreyColor, // Border color
                         width: 1.0, // Border width
                       ),
-                      borderRadius: BorderRadius.circular(12), // Border radius (optional)
+                      borderRadius:
+                          BorderRadius.circular(12), // Border radius (optional)
                     ),
                     child: Column(
                       children: [
@@ -881,7 +883,8 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                           _isPlaying = false;
                                         });
                                       } else {
-                                        await player.setFilePath(recordingPath!);
+                                        await player
+                                            .setFilePath(recordingPath!);
                                         player.play();
                                         setState(() {
                                           _isPlaying = true;

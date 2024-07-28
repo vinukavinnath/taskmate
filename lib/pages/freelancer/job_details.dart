@@ -8,7 +8,6 @@ import 'package:taskmate/components/maintenance_page.dart';
 import 'package:taskmate/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taskmate/freelancer_home_page.dart';
-import 'package:rxdart/rxdart.dart';
 
 class JobDetails extends StatefulWidget {
   final QueryDocumentSnapshot mostjobDoc;
@@ -33,8 +32,8 @@ class _JobDetailsState extends State<JobDetails> {
 // Audio player
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _audioUrl;
+  bool _isPlaying = false;
   Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
 
   @override
   void initState() {
@@ -43,11 +42,6 @@ class _JobDetailsState extends State<JobDetails> {
     _audioPlayer.durationStream.listen((duration) {
       setState(() {
         _duration = duration ?? Duration.zero;
-      });
-    });
-    _audioPlayer.positionStream.listen((position) {
-      setState(() {
-        _position = position;
       });
     });
   }
@@ -65,6 +59,14 @@ class _JobDetailsState extends State<JobDetails> {
   void dispose() {
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    return [if (hours > 0) hours, minutes, seconds].map(twoDigits).join(':');
   }
 
   void congratulateOnPlaceBid() {
@@ -117,14 +119,6 @@ class _JobDetailsState extends State<JobDetails> {
         );
       },
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final seconds = duration.inSeconds.remainder(60);
-    return [if (hours > 0) hours, minutes, seconds].map(twoDigits).join(':');
   }
 
   @override
@@ -210,62 +204,173 @@ class _JobDetailsState extends State<JobDetails> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: AttachmentCard(
-                          cardChild: Image.network(
-                            subData['image1Url'] ?? '',
-                          ),
-                        ),
+                        child: subData['image1Url'] != null &&
+                                subData['image1Url'].isNotEmpty
+                            ? AttachmentCard(
+                                cardChild: Image.network(
+                                  subData['image1Url'],
+                                ),
+                              )
+                            : const Center(
+                                child: Text('No image available'),
+                              ),
                       ),
                       const SizedBox(
                         width: 10.0,
                       ),
                       Expanded(
-                        child: AttachmentCard(
-                          cardChild: Image.network(
-                            subData['image2Url'] ?? '',
-                          ),
-                        ),
-                      ),
+                        child: subData['image2Url'] != null &&
+                                subData['image1Url'].isNotEmpty
+                            ? AttachmentCard(
+                                cardChild: Image.network(
+                                  subData['image1Url'],
+                                ),
+                              )
+                            : const Center(
+                                child: Text('No image available'),
+                              ),
+                      )
                     ],
                   ),
                 ),
-
+                const Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                  child: Text(
+                    'Listen to Recording',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
                 Center(
-                  child: _audioUrl == null
-                      ? CircularProgressIndicator()
-                      : Column(
+                  child: _audioUrl != null
+                      ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Slider(
-                        min: 0.0,
-                        max: _duration.inSeconds.toDouble(),
-                        value: _position.inSeconds.toDouble().clamp(0.0, _duration.inSeconds.toDouble()),
-                        onChanged: (value) {
-                          setState(() {
-                            _audioPlayer.seek(Duration(seconds: value.toInt()));
-                          });
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(
+                              8.0,
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _isPlaying
+                                  ? kOceanBlueColor
+                                  : kDeepBlueColor,
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                tooltip: _isPlaying
+                                    ? 'Tap here to Stop'
+                                    : null,
+                                onPressed: () {
+                                  if (_isPlaying) {
+                                    _audioPlayer.pause();
+                                    _isPlaying = false;
+                                  } else {
+                                    _audioPlayer.play();
+                                    _isPlaying = true;
+                                  }
+                                },
+                                icon: Icon(
+                                  _isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  color: kBrilliantWhite,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(
+                              8.0,
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _isPlaying
+                                  ? kWarningRedColor
+                                  : kLowOpacityLightBlueColor,
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                tooltip: _isPlaying
+                                    ? 'Tap here to Stop'
+                                    : 'Tap here to record',
+                                onPressed: () {
+                                  if (_isPlaying) {
+                                    _audioPlayer.stop();
+                                    _isPlaying = false;
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.stop,
+                                  color: _isPlaying
+                                      ? kBrilliantWhite
+                                      : kAshWhiteColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          _audioPlayer.play();
-                        },
-                        child: Text('Play'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          _audioPlayer.pause();
-                        },
-                        child: Text('Pause'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          _audioPlayer.stop();
-                        },
-                        child: Text('Stop'),
-                      ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     _audioPlayer.play();
+                      //   },
+                      //   child: Text('Play'),
+                      // ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     _audioPlayer.pause();
+                      //   },
+                      //   child: Text('Pause'),
+                      // ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     _audioPlayer.stop();
+                      //   },
+                      //   child: const Text('Stop'),
+                      // ),
+                      // StreamBuilder<Duration>(
+                      //   stream: _audioPlayer.positionStream,
+                      //   builder: (context, snapshot) {
+                      //     final position = snapshot.data ?? Duration.zero;
+                      //     return Column(
+                      //       children: [
+                      //         Padding(
+                      //           padding: const EdgeInsets.symmetric(
+                      //               horizontal: 16.0),
+                      //           child: Row(
+                      //             mainAxisAlignment:
+                      //                 MainAxisAlignment.spaceBetween,
+                      //             children: [
+                      //               Text(_formatDuration(position)),
+                      //               Text(_formatDuration(_duration)),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //         Slider(
+                      //           min: 0.0,
+                      //           max: _duration.inSeconds.toDouble(),
+                      //           value: position.inSeconds
+                      //               .toDouble()
+                      //               .clamp(0.0,
+                      //                   _duration.inSeconds.toDouble()),
+                      //           onChanged: (value) {
+                      //             setState(() {
+                      //               _audioPlayer.seek(
+                      //                   Duration(seconds: value.toInt()));
+                      //             });
+                      //           },
+                      //         ),
+                      //       ],
+                      //     );
+                      //   },
+                      // )
                     ],
-                  ),
+                  )
+                      : const Text("data")
                 ),
                 Align(
                   alignment: Alignment.center,
@@ -291,7 +396,8 @@ class _JobDetailsState extends State<JobDetails> {
                   ),
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
                   child: Text(
                     'Describe your Bid',
                     style: TextStyle(fontWeight: FontWeight.w600),
@@ -313,7 +419,8 @@ class _JobDetailsState extends State<JobDetails> {
                             hintStyle: const TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(color: kDeepBlueColor),
+                              borderSide:
+                                  const BorderSide(color: kDeepBlueColor),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -346,28 +453,33 @@ class _JobDetailsState extends State<JobDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
                                     child: Text(
                                       'Bid Amount',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   TextFormField(
                                     controller: _bidAmountController,
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 6.0),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 6.0),
                                       hintText: 'LKR',
-                                      hintStyle: const TextStyle(fontSize: 12.0),
+                                      hintStyle:
+                                          const TextStyle(fontSize: 12.0),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
                                             color: kDeepBlueColor),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
                                             color: kDeepBlueColor, width: 2.0),
                                       ),
@@ -391,28 +503,33 @@ class _JobDetailsState extends State<JobDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
                                     child: Text(
                                       'Delivered within',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   TextFormField(
                                     controller: _deliveryTimeController,
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 6.0),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 6.0),
                                       hintText: 'Days',
-                                      hintStyle: const TextStyle(fontSize: 12.0),
+                                      hintStyle:
+                                          const TextStyle(fontSize: 12.0),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
                                             color: kDeepBlueColor),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
                                             color: kDeepBlueColor, width: 2.0),
                                       ),
@@ -444,21 +561,22 @@ class _JobDetailsState extends State<JobDetails> {
                         // Get the current user
                         User? currentUser = FirebaseAuth.instance.currentUser;
 
-
                         if (currentUser != null) {
                           String userUID = currentUser.uid;
 
                           // Reference to the "bidsjobs" subcollection
-                          CollectionReference bidsJobsCollection = FirebaseFirestore
-                              .instance
-                              .collection('jobs') // Use your actual collection name
-                              .doc('pDn1qSUVNLZLiAY9oTqFuV7dMzi2')
-                              .collection('jobsnew')
-                              .doc(widget.mostjobDoc.id)
-                              .collection('bidsjobs');
+                          CollectionReference bidsJobsCollection =
+                              FirebaseFirestore.instance
+                                  .collection(
+                                      'jobs') // Use your actual collection name
+                                  .doc('pDn1qSUVNLZLiAY9oTqFuV7dMzi2')
+                                  .collection('jobsnew')
+                                  .doc(widget.mostjobDoc.id)
+                                  .collection('bidsjobs');
 
                           // Use the user's UID as the document ID
-                          DocumentReference newBidDocRef = bidsJobsCollection.doc(userUID);
+                          DocumentReference newBidDocRef =
+                              bidsJobsCollection.doc(userUID);
 
                           // Data to be saved, including userUID
                           Map<String, dynamic> dataToSave = {
@@ -491,7 +609,6 @@ class _JobDetailsState extends State<JobDetails> {
                       ),
                     ),
                   ),
-
                 ),
               ],
             ),
