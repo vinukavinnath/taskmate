@@ -63,6 +63,9 @@ dependencies:
   kommunicate_flutter: ^1.7.2
   flutter_markdown: ^0.6.15
   share_plus: ^7.2.1
+  record: ^5.0.5
+  just_audio: ^0.9.37
+  permission_handler: ^11.0.0
 
 dev_dependencies:
   flutter_test:

@@ -4,16 +4,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/client_home_page.dart';
 import 'package:taskmate/components/attachment_card.dart';
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_textfield.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_title.dart';
+import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/components/maintenance_page.dart';
-import 'package:taskmate/components/snackbar.dart';
 import 'package:taskmate/constants.dart';
-import 'package:taskmate/profile/client/user_model1.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:path/path.dart' as p;
+import 'dart:async';
+
 
 class ClientPostJob extends StatefulWidget {
   const ClientPostJob({
@@ -29,8 +36,17 @@ class ClientPostJob extends StatefulWidget {
 
 class _ClientPostJobState extends State<ClientPostJob> {
   final formKey = GlobalKey<FormState>();
-  List<String> _skills = [];
-  String _skillsText = '';
+  final List<String> _skills = [];
+  final String _skillsText = '';
+
+// Audio recording feature
+  final record = AudioRecorder();
+  final player = AudioPlayer();
+  bool _isRecording = false;
+  bool _isPlaying = false;
+  String? recordingPath;
+  Timer? _timer;
+  Duration _duration = Duration.zero;
 
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController jobDescriptionController =
@@ -42,12 +58,20 @@ class _ClientPostJobState extends State<ClientPostJob> {
   File? _selectedImage2;
 
   @override
+  void initState() {
+    super.initState();
+    // Request microphone permission when the widget is initialized
+    requestPermissions();
+  }
+
+  @override
   void dispose() {
     // Dispose of the text controllers to prevent memory leaks
     jobTitleController.dispose();
     jobDescriptionController.dispose();
     dayCountController.dispose();
     budgetController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -76,6 +100,30 @@ class _ClientPostJobState extends State<ClientPostJob> {
       }
     } catch (e) {
       // Handle errors
+    }
+  }
+  Future<String?> uploadRecordingToStorage(String recordingPath, String recordingName) async {
+    try {
+      // Get a reference to Firebase Storage
+      FirebaseStorage storage = FirebaseStorage.instance;
+
+      // Create a reference to the location you want to upload the recording
+      Reference ref = storage.ref().child('recordings').child(recordingName);
+
+      // Upload the recording file
+      UploadTask uploadTask = ref.putFile(File(recordingPath));
+
+      // Wait for the upload to complete
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL of the uploaded recording
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      // Handle any errors that occur during the upload
+      print('Error uploading recording: $e');
+      return null;
     }
   }
 
@@ -116,6 +164,10 @@ class _ClientPostJobState extends State<ClientPostJob> {
       String? image2Url =
           await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
+      // Upload the recording to Firebase Storage and get the download URL
+      String? recordingUrl =
+      await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+
       // Add job data to Firestore within the "jobsnew" subcollection
       await jobsNewCollection.doc(timestamp).set({
         'JobID': timestamp,
@@ -126,6 +178,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
         'skills': _skills,
         'image1Url': image1Url,
         'image2Url': image2Url,
+        'recordingUrl': recordingUrl,
         'status': 'new', // Set the status to "active"
         'releaseMoney': 0,
         'Precentage': 0,
@@ -134,6 +187,116 @@ class _ClientPostJobState extends State<ClientPostJob> {
       });
     } catch (e) {
       // Handle any errors that occur
+    }
+  }
+
+// Request microphone permission
+  Future<void> requestPermissions() async {
+    // Check if the permission is already granted
+    var status = await Permission.microphone.status;
+
+    // If the permission is not granted, request it
+    if (!status.isGranted) {
+      await Permission.microphone.request();
+    }
+  }
+
+// Checks for the permission
+  Future<bool> checkPermission() async {
+    var status = await Permission.microphone.status;
+    return status.isGranted;
+  }
+
+// Starts recording
+  Future<void> startRecording() async {
+    bool permissionGranted = await checkPermission();
+    if (permissionGranted) {
+      final Directory appDocumentsDir =
+          await getApplicationDocumentsDirectory();
+      final String filePath = p.join(appDocumentsDir.path, "rec.wav");
+      await record.start(const RecordConfig(), path: filePath);
+      setState(() {
+        _isRecording = true;
+        _duration = Duration.zero;
+        recordingPath = null;
+      });
+      _startTimer();
+    } else {
+      if (context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        CusSnackBar(
+          backColor: kWarningRedColor,
+          time: 3,
+          title: 'You don\'t have access to record voice',
+          icon: Icons.dangerous,
+        ),
+      );
+    }
+  }
+
+// Stops recording
+  Future<void> stopRecording() async {
+    String? filePath = await record.stop();
+    _stopTimer();
+    if (filePath != null) {
+      setState(() {
+        _isRecording = false;
+        recordingPath = filePath;
+      });
+    }
+  }
+
+// Deletes recording
+  Future<void> deleteRecording() async {
+    if (recordingPath != null) {
+      File file = File(recordingPath!);
+      if (await file.exists()) {
+        await file.delete();
+        setState(() {
+          recordingPath = null;
+          _isRecording = false;
+          _isPlaying = false;
+        });
+      }
+    }
+  }
+
+// Starts counting time
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _duration = Duration(seconds: _duration.inSeconds + 1);
+      });
+    });
+  }
+
+// Stops counting time
+  void _stopTimer() {
+    _timer?.cancel();
+  }
+
+// Formats recording time
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$twoDigitMinutes:$twoDigitSeconds';
+  }
+
+// Uploads audio
+  Future<String?> uploadFileToFirebase(String filePath) async {
+    File file = File(filePath);
+    try {
+      String fileName = p.basename(filePath);
+      Reference storageReference =
+      FirebaseStorage.instance.ref().child('recordings/$fileName');
+      UploadTask uploadTask = storageReference.putFile(file);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print("File upload error: $e");
+      return null;
     }
   }
 
@@ -609,9 +772,9 @@ class _ClientPostJobState extends State<ClientPostJob> {
                             borderRadius: BorderRadius.circular(
                                 20.0), // Adjust the radius as needed
                           ),
-                          side: BorderSide(
+                          side: const BorderSide(
                               color:
-                              kJetBlack), // Optional: customize the border color
+                                  kJetBlack), // Optional: customize the border color
                         ),
                         child: const Text(
                           'Remove',
@@ -624,6 +787,115 @@ class _ClientPostJobState extends State<ClientPostJob> {
                   ),
                   const SizedBox(
                     height: 12.0,
+                  ),
+                  const UserDataGatherTitle(
+                    title: 'Explain with a Voice Recording',
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: kDarkGreyColor, // Border color
+                        width: 1.0, // Border width
+                      ),
+                      borderRadius: BorderRadius.circular(12), // Border radius (optional)
+                    ),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            _isRecording
+                                ? "Recording: ${_formatDuration(_duration)}"
+                                : recordingPath != null
+                                    ? "Recorded: ${_formatDuration(_duration)}"
+                                    : "Tap Mic button to Record",
+                            style: kSubHeadingTextStyle,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(
+                                8.0,
+                              ),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _isRecording
+                                    ? kOceanBlueColor
+                                    : kDeepBlueColor,
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  tooltip: _isRecording
+                                      ? 'Tap here to Stop'
+                                      : 'Tap here to record',
+                                  onPressed: () async {
+                                    if (_isRecording) {
+                                      await stopRecording();
+                                    } else {
+                                      await startRecording();
+                                    }
+                                  },
+                                  icon: Icon(
+                                    _isRecording ? Icons.stop : Icons.mic,
+                                    color: kBrilliantWhite,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(
+                                8.0,
+                              ),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: recordingPath != null
+                                    ? kWarningRedColor
+                                    : null,
+                              ),
+                              child: IconButton(
+                                tooltip: recordingPath != null
+                                    ? 'Delete recording'
+                                    : null,
+                                onPressed: recordingPath != null
+                                    ? deleteRecording
+                                    : null,
+                                icon: const Icon(Icons.delete),
+                                color: recordingPath != null
+                                    ? kAshWhiteColor
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Center(
+                          child: Container(
+                            child: recordingPath != null
+                                ? LightMainButton(
+                                    process: () async {
+                                      if (player.playing) {
+                                        player.stop();
+                                        setState(() {
+                                          _isPlaying = false;
+                                        });
+                                      } else {
+                                        await player.setFilePath(recordingPath!);
+                                        player.play();
+                                        setState(() {
+                                          _isPlaying = true;
+                                        });
+                                      }
+                                    },
+                                    title: _isPlaying ? "Stop" : "Play",
+                                    screenWidth: screenWidth / 2,
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   DarkMainButton(
                     title: 'Post Job Now',
@@ -690,7 +962,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
                       }
                     },
                     screenWidth: screenWidth,
-                  )
+                  ),
                 ],
               ),
             ),
