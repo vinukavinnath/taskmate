@@ -535,30 +535,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
                           ),
                         ),
                       ),
-                      // GestureDetector(
-                      //   onTap: () => selectService('Print design'),
-                      //   child: Container(
-                      //     margin: const EdgeInsets.symmetric(horizontal: 0.0),
-                      //     padding: const EdgeInsets.symmetric(
-                      //         horizontal: 16.0,
-                      //         vertical: 8.0), // Adjust the padding
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.transparent,
-                      //       border: Border.all(
-                      //         color: kDarkGreyColor,
-                      //       ),
-                      //       borderRadius: BorderRadius.circular(10),
-                      //     ),
-                      //     child: const Text(
-                      //       'Print design',
-                      //       style: TextStyle(
-                      //         fontSize: 11,
-                      //         fontWeight: FontWeight.bold,
-                      //         color: kDarkGreyColor,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                   const SizedBox(

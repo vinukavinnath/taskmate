@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import for FirebaseAuth
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/pages/freelancer/job_details.dart';
 
@@ -16,6 +17,9 @@ class JobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subData = mostjobDoc.data() as Map<String, dynamic>;
+
+    // Get the current user's UID
+    String? userUid = FirebaseAuth.instance.currentUser?.uid;
 
     return GestureDetector(
       onTap: () {
@@ -66,9 +70,8 @@ class JobCard extends StatelessWidget {
                   ),
                   StreamBuilder(
                     stream: FirebaseFirestore.instance
-                        .collection('jobs') // Use your actual collection name
-
-                        .doc('pDn1qSUVNLZLiAY9oTqFuV7dMzi2')
+                        .collection('jobs')
+                        .doc(userUid) // Use userUid here
                         .collection('jobsnew')
                         .doc(mostjobDoc.id)
                         .collection('bidsjobs')
