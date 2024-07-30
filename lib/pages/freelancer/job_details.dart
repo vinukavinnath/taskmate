@@ -315,60 +315,6 @@ class _JobDetailsState extends State<JobDetails> {
                           ),
                         ],
                       ),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     _audioPlayer.play();
-                      //   },
-                      //   child: Text('Play'),
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     _audioPlayer.pause();
-                      //   },
-                      //   child: Text('Pause'),
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     _audioPlayer.stop();
-                      //   },
-                      //   child: const Text('Stop'),
-                      // ),
-                      // StreamBuilder<Duration>(
-                      //   stream: _audioPlayer.positionStream,
-                      //   builder: (context, snapshot) {
-                      //     final position = snapshot.data ?? Duration.zero;
-                      //     return Column(
-                      //       children: [
-                      //         Padding(
-                      //           padding: const EdgeInsets.symmetric(
-                      //               horizontal: 16.0),
-                      //           child: Row(
-                      //             mainAxisAlignment:
-                      //                 MainAxisAlignment.spaceBetween,
-                      //             children: [
-                      //               Text(_formatDuration(position)),
-                      //               Text(_formatDuration(_duration)),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //         Slider(
-                      //           min: 0.0,
-                      //           max: _duration.inSeconds.toDouble(),
-                      //           value: position.inSeconds
-                      //               .toDouble()
-                      //               .clamp(0.0,
-                      //                   _duration.inSeconds.toDouble()),
-                      //           onChanged: (value) {
-                      //             setState(() {
-                      //               _audioPlayer.seek(
-                      //                   Duration(seconds: value.toInt()));
-                      //             });
-                      //           },
-                      //         ),
-                      //       ],
-                      //     );
-                      //   },
-                      // )
                     ],
                   )
                       : const Text("No Recording Found")
@@ -554,8 +500,7 @@ class _JobDetailsState extends State<JobDetails> {
                 ),
                 Container(
                   width: screenWidth,
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 28.0, vertical: 16.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 16.0),
                   child: ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -565,19 +510,14 @@ class _JobDetailsState extends State<JobDetails> {
                         if (currentUser != null) {
                           String userUID = currentUser.uid;
 
+                          // Get the reference to the specific document of the job
+                          DocumentReference jobDocRef = widget.mostjobDoc.reference;
+
                           // Reference to the "bidsjobs" subcollection
-                          CollectionReference bidsJobsCollection =
-                              FirebaseFirestore.instance
-                                  .collection(
-                                      'jobs') // Use your actual collection name
-                                  .doc('pDn1qSUVNLZLiAY9oTqFuV7dMzi2')
-                                  .collection('jobsnew')
-                                  .doc(widget.mostjobDoc.id)
-                                  .collection('bidsjobs');
+                          CollectionReference bidsJobsCollection = jobDocRef.collection('bidsjobs');
 
                           // Use the user's UID as the document ID
-                          DocumentReference newBidDocRef =
-                              bidsJobsCollection.doc(userUID);
+                          DocumentReference newBidDocRef = bidsJobsCollection.doc(userUID);
 
                           // Data to be saved, including userUID
                           Map<String, dynamic> dataToSave = {
@@ -611,6 +551,7 @@ class _JobDetailsState extends State<JobDetails> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
