@@ -38,7 +38,7 @@ class _FreelancerHomePageState extends State<FreelancerHomePage> {
           child: GNav(
             activeColor: kAmberColor,
             color: kDeepBlueColor,
-            gap: 10.0,
+            gap: 1.0,
             selectedIndex: _selectedIndex,
             onTabChange: (int index) {
               setState(() {

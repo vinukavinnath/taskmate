@@ -293,6 +293,8 @@ class _LoginState extends State<Login> {
                                                   //Email Textfield
                                                   TextFormField(
                                                 controller: emailController,
+                                                keyboardType:
+                                                    TextInputType.emailAddress,
                                                 validator: (value) {
                                                   if (value == null ||
                                                       value.isEmpty ||
@@ -307,6 +309,9 @@ class _LoginState extends State<Login> {
                                                   border: InputBorder.none,
                                                   hintText: 'Email',
                                                 ),
+                                                autofillHints: const [
+                                                  AutofillHints.email
+                                                ],
                                               ),
                                             ),
                                             //Password Textfield
@@ -325,6 +330,8 @@ class _LoginState extends State<Login> {
                                               ),
                                               child: TextFormField(
                                                 controller: passwordController,
+                                                keyboardType: TextInputType
+                                                    .visiblePassword,
                                                 validator: (value) {
                                                   if (value == null ||
                                                       value.isEmpty) {
@@ -347,6 +354,9 @@ class _LoginState extends State<Login> {
                                                     },
                                                   ),
                                                 ),
+                                                autofillHints: const [
+                                                  AutofillHints.password
+                                                ],
                                               ),
                                             ),
                                           ],

@@ -106,10 +106,11 @@ class _JobDetailsState extends State<JobDetails> {
               child: DarkMainButton(
                 title: 'Try Another Project',
                 process: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (context) => const FreelancerHomePage(),
                     ),
+                        (Route<dynamic> route) => false, // Remove all previous routes
                   );
                 },
                 screenWidth: MediaQuery.of(context).size.width,
