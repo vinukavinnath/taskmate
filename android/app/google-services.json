@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "143442704256",
-    "project_id": "taskmate-d603f",
-    "storage_bucket": "taskmate-d603f.appspot.com"
+    "project_number": "480644203885",
+    "project_id": "taskmate-4fc48",
+    "storage_bucket": "taskmate-4fc48.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:143442704256:android:a92db3dd4116d3f194f365",
+        "mobilesdk_app_id": "1:480644203885:android:abc3816bf4fa665d478664",
         "android_client_info": {
           "package_name": "com.taskmateapp.taskmate"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBTUSKEtNOPvKxhcTzDP6GKHWPmOYxwn6g"
+          "current_key": "AIzaSyAHRB_sQbwHOLKASu5nltnMSyOlvrGdaGY"
         }
       ],
       "services": {
