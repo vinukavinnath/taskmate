@@ -50,7 +50,7 @@ dependencies:
   image_picker: ^1.0.1
   line_awesome_flutter: ^2.0.0
   flutter_masked_text: ^0.8.0
-  intl: ^0.18.1
+  intl: ^0.17.0
   firebase_database: ^10.2.4
   connectivity_plus: ^4.0.2
   dotted_border: ^2.0.0+3
@@ -66,6 +66,7 @@ dependencies:
   record: ^5.0.5
   just_audio: ^0.9.37
   permission_handler: ^11.0.0
+  flutter_localization: ^0.1.14
 
 dev_dependencies:
   flutter_test:
