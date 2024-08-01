@@ -9,14 +9,11 @@ import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/loading_screen.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
-import 'package:taskmate/components/snackbar.dart';
-import 'package:taskmate/bottom_nav_bar/freelancer/jobs.dart';
-import 'package:taskmate/components/maintenance_page.dart';
 import 'package:taskmate/freelancer_home_page.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../profile/client/user_model1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   // final UserModel1 client;
@@ -35,6 +32,15 @@ class _LoginState extends State<Login> {
   bool isLoading = false;
 
   List currentJobRole = [];
+
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
 
   void _onToggle(int? index) {
     setState(() {
@@ -165,6 +171,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
+    _loadLanguagePreference();
     loadImages('images/background/login.webp');
     loadImages('images/taskmate_logo_light.webp');
     loadImages('images/noise_image.webp');
@@ -231,44 +238,40 @@ class _LoginState extends State<Login> {
                                         height: 30.0,
                                       ),
                                       Text(
-                                        'Welcome Back!',
+                                        _getTranslatedText('lgin_ttl'),
                                         style: kHeadingTextStyle,
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 16.0),
-                                        child: Container(
-                                          // margin: EdgeInsets.symmetric(horizontal: 20.0),
-                                          // width: screenWidth,
-                                          child: ToggleSwitch(
-                                            activeBgColor: const [
-                                              kOceanBlueColor
-                                            ],
-                                            activeFgColor: kDeepBlueColor,
-                                            inactiveBgColor: kLightBlueColor,
-                                            inactiveFgColor: kOceanBlueColor,
-                                            cornerRadius: 10.0,
-                                            radiusStyle: true,
-                                            minWidth: screenWidth / 2,
-                                            minHeight: 45.0,
-                                            initialLabelIndex: currentUserRole,
-                                            totalSwitches: 2,
-                                            customTextStyles: const [
-                                              TextStyle(
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w600),
-                                              TextStyle(
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w600),
-                                            ],
-                                            animate: true,
-                                            curve: Curves.ease,
-                                            labels: const [
-                                              'Freelancer',
-                                              'Client'
-                                            ],
-                                            onToggle: _onToggle,
-                                          ),
+                                        child: ToggleSwitch(
+                                          activeBgColor: const [
+                                            kOceanBlueColor
+                                          ],
+                                          activeFgColor: kDeepBlueColor,
+                                          inactiveBgColor: kLightBlueColor,
+                                          inactiveFgColor: kOceanBlueColor,
+                                          cornerRadius: 10.0,
+                                          radiusStyle: true,
+                                          minWidth: screenWidth / 2,
+                                          minHeight: 45.0,
+                                          initialLabelIndex: currentUserRole,
+                                          totalSwitches: 2,
+                                          customTextStyles: const [
+                                            TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.w600),
+                                            TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.w600),
+                                          ],
+                                          animate: true,
+                                          curve: Curves.ease,
+                                          labels: const [
+                                            'Freelancer',
+                                            'Client'
+                                          ],
+                                          onToggle: _onToggle,
                                         ),
                                       ),
                                       Form(
@@ -304,10 +307,10 @@ class _LoginState extends State<Login> {
                                                   return null; // Return null for valid input
                                                 },
                                                 obscureText: false,
-                                                decoration:
-                                                    const InputDecoration(
+                                                decoration: InputDecoration(
                                                   border: InputBorder.none,
-                                                  hintText: 'Email',
+                                                  hintText: _getTranslatedText(
+                                                      'email'),
                                                 ),
                                                 autofillHints: const [
                                                   AutofillHints.email
@@ -342,7 +345,8 @@ class _LoginState extends State<Login> {
                                                 obscureText: obsecureController,
                                                 decoration: InputDecoration(
                                                   border: InputBorder.none,
-                                                  hintText: 'Password',
+                                                  hintText: _getTranslatedText(
+                                                      'password'),
                                                   suffixIcon: IconButton(
                                                     icon: obsecureController
                                                         ? const Icon(Icons.lock)
@@ -364,7 +368,7 @@ class _LoginState extends State<Login> {
                                       ),
                                       //"Log In" Button goes here
                                       DarkMainButton(
-                                          title: 'Log In',
+                                          title: _getTranslatedText('login'),
                                           process: () async {
                                             if (_formKey.currentState!
                                                 .validate()) {
@@ -415,7 +419,7 @@ class _LoginState extends State<Login> {
                                                     backColor: kWarningRedColor,
                                                     time: 3,
                                                     title:
-                                                        'User isn\'t available',
+                                                        _getTranslatedText('usr_n_avl'),
                                                     icon: Icons.dangerous,
                                                   ),
                                                 );
@@ -435,9 +439,9 @@ class _LoginState extends State<Login> {
                                             ),
                                           );
                                         },
-                                        child: const Text(
-                                          'Forgot your Password',
-                                          style: TextStyle(
+                                        child: Text(
+                                          _getTranslatedText('forgot_pw'),
+                                          style: const TextStyle(
                                             color: kDarkGreyColor,
                                           ),
                                         ),
@@ -456,9 +460,9 @@ class _LoginState extends State<Login> {
                                                 color: kLightBlueColor,
                                               ),
                                             ),
-                                            const Text(
-                                              'Or continue with',
-                                              style: TextStyle(
+                                            Text(
+                                              _getTranslatedText('sgn_up_dvd'),
+                                              style: const TextStyle(
                                                 fontSize: 13.0,
                                               ),
                                             ),
@@ -554,5 +558,12 @@ class _LoginState extends State<Login> {
             )
           : const LoadingScreen(title: 'Please wait. . . '),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

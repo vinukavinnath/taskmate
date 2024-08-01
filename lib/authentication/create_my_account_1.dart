@@ -14,6 +14,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:taskmate/dashboard/privacy_policy.dart';
 import 'package:taskmate/dashboard/terms_conditions.dart';
 import 'package:taskmate/dashboard/terms_conditions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class CreateMyAccount1 extends StatefulWidget {
   const CreateMyAccount1({super.key});
@@ -32,6 +34,21 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
   final email = TextEditingController();
   final password = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -178,11 +195,12 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 32.0, horizontal: 8.0),
                       child: Text(
-                        'Create My Account',
+                        _getTranslatedText('crt_acc'),
+                        textAlign: TextAlign.center,
                         style: kHeadingTextStyle,
                       ),
                     ),
@@ -216,9 +234,9 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                                 return null; // Return null for valid input
                               },
                               obscureText: false,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Email',
+                                hintText: _getTranslatedText('email'),
                               ),
                             ),
                           ),
@@ -246,7 +264,7 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                               obscureText: obsecureController0,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Password',
+                                hintText: _getTranslatedText('password'),
                                 suffixIcon: IconButton(
                                   icon: obsecureController0
                                       ? const Icon(Icons.lock)
@@ -283,7 +301,7 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                               obscureText: obsecureController1,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Confirm Password',
+                                hintText: _getTranslatedText('conf_pw'),
                                 suffixIcon: IconButton(
                                   icon: obsecureController1
                                       ? const Icon(Icons.lock)
@@ -321,10 +339,11 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => const TermsConditions(),
+                                    builder: (context) =>
+                                        const TermsConditions(),
                                   ),
                                 );
                               },
@@ -345,7 +364,7 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const PrivacyPolicy(),
@@ -431,7 +450,7 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                       ),
                     ),
                     DarkMainButton(
-                        title: 'Create My Account',
+                        title: _getTranslatedText('crt_acc'),
                         process: () {
                           if (_formKey.currentState!.validate()) {
                             // Form is valid, proceed with submission or other actions
@@ -452,7 +471,9 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const BottomSubText('Already registered?'),
+                        BottomSubText(
+                          _getTranslatedText('sgn_up_ftr'),
+                        ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pushReplacement(
@@ -461,9 +482,9 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
+                          child:Text(
+                            _getTranslatedText('login'),
+                            style: const TextStyle(
                               color: kAmberColor,
                             ),
                           ),
@@ -478,5 +499,12 @@ class _CreateMyAccount1State extends State<CreateMyAccount1> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }
