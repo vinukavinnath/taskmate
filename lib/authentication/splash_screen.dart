@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:taskmate/authentication/get_started.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/authentication/language_selection.dart';
 import 'package:taskmate/authentication/root_page.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
@@ -27,12 +29,27 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     loadImage(image);
 
+    _navigateToNextScreen();
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? languageCode = prefs.getString('language_code');
+
     Timer(const Duration(seconds: 4), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const RootPage(),
-        ),
-      );
+      if (languageCode == null) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const LanguageSelectionScreen(),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const RootPage(),
+          ),
+        );
+      }
     });
   }
 

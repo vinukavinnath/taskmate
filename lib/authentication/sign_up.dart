@@ -6,9 +6,11 @@ import 'package:taskmate/authentication/log_in.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/bottom_sub_text.dart';
 import 'package:taskmate/authentication/create_my_account_1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:taskmate/components/maintenance_page.dart';
 import 'package:taskmate/components/dark_main_button.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -19,7 +21,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   String? imagePath;
-
+  String? _languageCode;
   Future<void> loadImages(String imageUrl) async {
     try {
       await precacheImage(AssetImage(imagePath!), context);
@@ -47,9 +49,17 @@ class _SignUpState extends State<SignUp> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadLanguagePreference();
     loadImages('images/background/signup.webp');
     loadImages('images/taskmate_logo_light.webp');
     loadImages('images/noise_image.webp');
@@ -149,7 +159,7 @@ class _SignUpState extends State<SignUp> {
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const <Widget>[
+                                        children:  <Widget>[
                                           Icon(
                                             Icons.person_add,
                                             color: kBrilliantWhite,
@@ -158,7 +168,7 @@ class _SignUpState extends State<SignUp> {
                                             width: 20.0,
                                           ),
                                           Text(
-                                            'Continue with Email',
+                                            _getTranslatedText('sgn_up_emlbtn'),
                                             style: TextStyle(
                                                 color: kBrilliantWhite,
                                                 fontSize: 15.0),
@@ -286,5 +296,11 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

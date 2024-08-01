@@ -1,29 +1,30 @@
-class UnbordingContent {
+// content_model.dart
+class OnboardingContent {
   String image;
-  String title;
-  String description;
+  String titleKey;
+  String descriptionKey;
 
-  UnbordingContent({
+  OnboardingContent({
     required this.image,
-    required this.title,
-    required this.description,
+    required this.titleKey,
+    required this.descriptionKey,
   });
 }
 
-List<UnbordingContent> contents = [
-  UnbordingContent(
-      title: 'Unlock Creativity at Your Fingertips',
-      image: 'images/sample_3d.png',
-      description:
-          "Find the perfect graphic designer to bring your vision to life."),
-  UnbordingContent(
-      title: 'Your Talent, Your Terms',
-      image: 'images/sample_3d.png',
-      description:
-          "Discover opportunities that match your skills, bid on jobs, complete projects, and get paid securely. Showcase your creativity and grow your freelance career."),
-  UnbordingContent(
-      title: 'Connecting Passion with Purpose',
-      image: 'images/sample_3d.png',
-      description:
-          "Join our thriving community of clients and freelancers. Collaborate on exciting projects, achieve your goals, and experience the synergy of creative minds working together."),
-  ];
+List<OnboardingContent> contents = [
+  OnboardingContent(
+    titleKey: 'onb_tit_1',
+    image: 'images/sample_3d.png',
+    descriptionKey: 'onb_des_1',
+  ),
+  OnboardingContent(
+    titleKey: 'onb_tit_2',
+    image: 'images/sample_3d.png',
+    descriptionKey: 'onb_des_2',
+  ),
+  OnboardingContent(
+    titleKey: 'onb_tit_3',
+    image: 'images/sample_3d.png',
+    descriptionKey: 'onb_des_3',
+  ),
+];
