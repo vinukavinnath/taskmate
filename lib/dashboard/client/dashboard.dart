@@ -13,7 +13,8 @@ import 'package:taskmate/dashboard/terms_conditions.dart';
 import 'package:taskmate/dashboard/client/transaction_history.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kommunicate_flutter/kommunicate_flutter.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class Dashboard extends StatefulWidget {
   // final UserModel1 client; // Add this line
@@ -34,6 +35,15 @@ class _DashboardState extends State<Dashboard> {
   // final userUid=FirebaseAuth.instance.currentUser.uid;
   late String compliment;
   String userId = '';
+
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
 
   void navigateToProfile() {
     Navigator.of(context).push(
@@ -143,8 +153,21 @@ class _DashboardState extends State<Dashboard> {
     return data;
   }
 
+  Future<void> setLanguage(BuildContext context, String languageCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language_code', languageCode);
+  }
+
+  Future<void> _toggleLanguage() async {
+    setState(() {
+      _languageCode = _languageCode == 'en' ? 'si' : 'en';
+      setLanguage(context, _languageCode!);
+    });
+  }
+
   @override
   void initState() {
+    _loadLanguagePreference();
     updateCompliment();
   }
 
@@ -179,8 +202,22 @@ class _DashboardState extends State<Dashboard> {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage(
-                              'images/cover_photo.webp',
+                            image: AssetImage('images/cover_photo.webp'),
+                          ),
+                        ),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                                8.0), // Adjust padding as needed
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.translate,
+                              ), // Change icon as needed
+                              color: kDeepBlueColor, // Change color as needed
+                              onPressed: () {
+                                // Handle button press
+                              },
                             ),
                           ),
                         ),
@@ -320,9 +357,8 @@ class _DashboardState extends State<Dashboard> {
             };
 
             KommunicateFlutterPlugin.buildConversation(conversationObject)
-                .then((clientConversationId) {
-            }).catchError((error) {
-            });
+                .then((clientConversationId) {})
+                .catchError((error) {});
           },
           backgroundColor: kDeepBlueColor,
           child: const Image(
@@ -331,5 +367,12 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

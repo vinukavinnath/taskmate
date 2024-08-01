@@ -5,7 +5,9 @@ import 'package:taskmate/constants.dart';
 // import 'package:taskmate/profile/client/user_model1.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/pending/client_pending_job_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientPosted extends StatefulWidget {
   const ClientPosted({
@@ -23,6 +25,14 @@ class ClientPosted extends StatefulWidget {
 class _ClientPostedState extends State<ClientPosted> {
   bool isJobsAvailable = true;
   String userId = '';
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
 
   Future<Map<String, dynamic>> fetchData() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -54,6 +64,8 @@ class _ClientPostedState extends State<ClientPosted> {
 
   @override
   void initState() {
+    _loadLanguagePreference();
+
     // if (FirebaseFirestore.instance
     //         .collection('jobs')
     //         .doc(userId)
@@ -92,7 +104,7 @@ class _ClientPostedState extends State<ClientPosted> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome Back, ',
+              _getTranslatedText('clnt_pstd_ttl'),
                   style: kJobCardTitleTextStyle.copyWith(color: kDarkGreyColor),
                 ),
                 FutureBuilder(
@@ -171,5 +183,11 @@ class _ClientPostedState extends State<ClientPosted> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

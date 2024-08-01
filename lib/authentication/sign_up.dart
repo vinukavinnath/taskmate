@@ -8,8 +8,6 @@ import 'package:taskmate/components/bottom_sub_text.dart';
 import 'package:taskmate/authentication/create_my_account_1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:taskmate/components/maintenance_page.dart';
-import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/localization/locales.dart';
 
 class SignUp extends StatefulWidget {
@@ -122,13 +120,12 @@ class _SignUpState extends State<SignUp> {
                                 const SizedBox(
                                   height: 30.0,
                                 ),
-
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0,
                                   ),
                                   child: Text(
-                                    'Sign Up & Find Your\nNext Gig',
+                                    _getTranslatedText('sgn_up_ttl'),
                                     textAlign: TextAlign.center,
                                     style: kHeadingTextStyle,
                                   ),
@@ -160,16 +157,16 @@ class _SignUpState extends State<SignUp> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children:  <Widget>[
-                                          Icon(
+                                          const Icon(
                                             Icons.person_add,
                                             color: kBrilliantWhite,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20.0,
                                           ),
                                           Text(
                                             _getTranslatedText('sgn_up_emlbtn'),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: kBrilliantWhite,
                                                 fontSize: 15.0),
                                           ),
@@ -193,9 +190,9 @@ class _SignUpState extends State<SignUp> {
                                           color: kLightBlueColor,
                                         ),
                                       ),
-                                      const Text(
-                                        'Or continue with',
-                                        style: TextStyle(
+                                      Text(
+                                        _getTranslatedText('sgn_up_dvd'),
+                                        style: const TextStyle(
                                           fontSize: 13.0,
                                         ),
                                       ),
@@ -261,8 +258,8 @@ class _SignUpState extends State<SignUp> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      const BottomSubText(
-                                          'Already registered?'),
+                                      BottomSubText(
+                                          _getTranslatedText('sgn_up_ftr'),),
                                       TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pushReplacement(
@@ -272,9 +269,9 @@ class _SignUpState extends State<SignUp> {
                                             ),
                                           );
                                         },
-                                        child: const Text(
-                                          'Log In',
-                                          style: TextStyle(
+                                        child: Text(
+                                          _getTranslatedText('login'),
+                                          style: const TextStyle(
                                             color: kAmberColor,
                                           ),
                                         ),
