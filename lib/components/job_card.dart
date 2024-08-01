@@ -80,7 +80,7 @@ class JobCard extends StatelessWidget {
                       if (snapshot.hasData) {
                         int numBids = snapshot.data!.docs.length;
                         return Text(
-                          '$numBids Bids ',
+                          'Job ID ${mostjobDoc.id}',
                           style: kJobCardDescriptionTextStyle,
                         );
                       } else {

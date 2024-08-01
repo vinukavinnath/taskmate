@@ -11,6 +11,8 @@ import 'package:taskmate/messaging/Receivemsg.dart';
 
 import 'package:taskmate/profile/client/user_model1.dart';
 
+import 'messaging/Sendmsg.dart';
+
 class ClientHomePage extends StatefulWidget {
   int passedIndex;
 
@@ -33,7 +35,7 @@ class ClientHomePage extends StatefulWidget {
 
 class _ClientHomePageState extends State<ClientHomePage> {
   late final List _items = [
-    Receivemsg(),
+    Sendmsg(),
     const ClientPosted(),
     const ClientJobStatus(),
     Dashboard(
