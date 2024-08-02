@@ -51,7 +51,7 @@ class ActiveJobs extends StatelessWidget {
                       if (!subSnapshot.hasData ||
                           subSnapshot.data!.docs.isEmpty) {
                         return const Center(
-                          child: Text('Hmm! You\'ve no any pending Jobs!'),
+                          child: Text(''),
                         );
                       }
 

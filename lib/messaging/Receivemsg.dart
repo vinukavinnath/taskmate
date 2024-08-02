@@ -53,32 +53,7 @@ class _ReceivemsgState extends State<Receivemsg> {
                 ),
               ),
               const SizedBox(height: 15),
-              Container(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Icon(Icons.search, size: 20, color: Color(0xFF4B4646)),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      "search",
-                      style: TextStyle(fontSize: 15, color: Color(0xFF4B4646)),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.filter_list, size: 25, color: Color(0xFF4B4646)),
-                    ),
-                  ],
-                ),
-                height: 38,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Colors.white,
-                  border: Border.all(color: Color(0xFF4B4646)),
-                ),
-              ),
+
             ],
           ),
           backgroundColor: Colors.white,

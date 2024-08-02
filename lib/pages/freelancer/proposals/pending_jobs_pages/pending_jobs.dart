@@ -57,7 +57,7 @@ class _PendingJobsState extends State<PendingJobs> {
                       if (!subSnapshot.hasData ||
                           subSnapshot.data!.docs.isEmpty) {
                         return const Center(
-                          child: Text('No data'),
+                          child: Text(''),
                         );
                       }
 
