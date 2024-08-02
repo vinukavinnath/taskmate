@@ -15,8 +15,35 @@ mixin LocalData {
     'login': 'Log In',
     'forgot_pw': 'Forgot your Password',
 
+    // Greetings
+    'morning':'Good Morning!',
+    'afternoon':'Good Afternoon!',
+    'evening':'Good Evening!',
+
     // Alerts
     'usr_n_avl': 'User isn\'t available',
+
+    // Dashboard
+    'prf':'Profile',
+    'blnc':'Balance',
+    'trns':'Trancaction History',
+    'hlp':'Help & Support',
+    'invt':'Invite Friends',
+    'trms':'Terms & Conditions',
+    'about':'About Us',
+    'lg_out':'Logout',
+
+    // Profile
+    'rws':'Reviews',
+    'edt_prf':'Edit Profile',
+
+    // Help and Support
+    'hlp_ttl':'Help & Support',
+    'hlp_des':'For any kind of help and support please write us on the below mentioned mail ID. \nThank you!',
+
+    // Buttons
+    'bck':'Back',
+
 
     // Page Specific
     'onb_tit_1': 'Unlock Creativity at Your Fingertips',
@@ -48,8 +75,34 @@ mixin LocalData {
     'login': 'ඇතුල් වන්න',
     'forgot_pw': 'මුරපදය අමතක වුණා ද?',
 
+    // Greetings
+    'morning':'සුභ උදෑසනක්!',
+    'afternoon':'සුභ සන්ධ්යාවක්!',
+    'evening':'සුභ සන්ධ්යාවක්!',
+
     // Alerts
     'usr_n_avl': 'පරිශීලක නොමැත',
+
+    // Dashboard
+    'prf':'පැතිකඩ',
+    'blnc':'ශේෂය',
+    'trns':'ගනුදෙනු ඉතිහාසය',
+    'hlp':'උදව් සහ සහාය',
+    'invt':'මිතුරන්ට ආරාධනා කරන්න',
+    'trms':'නියම සහ කොන්දේසි',
+    'about':'අපි ගැන',
+    'lg_out':'පිටවෙන්න',
+
+    // Profile
+    'rws':'සමාලෝචන',
+    'edt_prf':'පැතිකඩ සංස්කරණය කරන්න',
+
+    // Help and Support
+    'hlp_ttl':'උදව් සහ සහාය',
+    'hlp_des':'ඕනෑම ආකාරයක උපකාරයක් සහ සහායක් සඳහා කරුණාකර පහත සඳහන් තැපැල් හැඳුනුම්පතෙහි අපට ලියන්න. \nඔබට ස්තුතියි!',
+
+    // Buttons
+    'bck':'ආපසු',
 
     // Page Specific
     'onb_tit_1': 'ඔබගේ අත්වැලියේ නිර්මාණශීලීතාව අගයන්න',

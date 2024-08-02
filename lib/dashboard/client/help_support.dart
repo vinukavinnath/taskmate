@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HelpSupport extends StatefulWidget {
   const HelpSupport({super.key});
@@ -11,6 +13,15 @@ class HelpSupport extends StatefulWidget {
 }
 
 class _HelpSupportState extends State<HelpSupport> {
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
   void composeEmail() async {
     final url = Uri.encodeFull('mailto:helpme.taskmate@gmail.com');
     if (await canLaunch(url)) {
@@ -30,14 +41,20 @@ class _HelpSupportState extends State<HelpSupport> {
   }
 
   @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Help & Support',
+          title: Text(
+            _getTranslatedText('hlp_ttl'),
             style: kHeadingTextStyle,
           ),
           centerTitle: true,
@@ -79,8 +96,8 @@ class _HelpSupportState extends State<HelpSupport> {
               const SizedBox(
                 height: 80.0,
               ),
-              const Text(
-                'For any kind of help and support please write us on the below mentioned mail ID. \nThank you!',
+              Text(
+                _getTranslatedText('hlp_des'),
                 style: kTextStyle,
                 textAlign: TextAlign.center,
               ),
@@ -96,5 +113,12 @@ class _HelpSupportState extends State<HelpSupport> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }
