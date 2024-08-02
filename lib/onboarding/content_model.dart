@@ -14,7 +14,7 @@ class OnboardingContent {
 List<OnboardingContent> contents = [
   OnboardingContent(
     titleKey: 'onb_tit_1',
-    image: 'images/sample_3d.png',
+    image: 'images/onb_1.png',
     descriptionKey: 'onb_des_1',
   ),
   OnboardingContent(
@@ -24,7 +24,7 @@ List<OnboardingContent> contents = [
   ),
   OnboardingContent(
     titleKey: 'onb_tit_3',
-    image: 'images/sample_3d.png',
+    image: 'images/onb_3.png',
     descriptionKey: 'onb_des_3',
   ),
 ];

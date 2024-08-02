@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskmate/authentication/language_selection.dart';
 import 'package:taskmate/authentication/root_page.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -28,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     loadImage(image);
-
     _navigateToNextScreen();
   }
 
@@ -36,21 +34,24 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? languageCode = prefs.getString('language_code');
 
-    Timer(const Duration(seconds: 4), () {
-      if (languageCode == null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LanguageSelectionScreen(),
-          ),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const RootPage(),
-          ),
-        );
-      }
-    });
+    Timer(
+      const Duration(seconds: 4),
+      () {
+        if (languageCode == null) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LanguageSelectionScreen(),
+            ),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const RootPage(),
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override

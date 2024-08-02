@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:taskmate/authentication/log_in.dart';
+import 'package:taskmate/client_home_page.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/dashboard_item.dart';
 import 'package:taskmate/dashboard/client/about_us.dart';
@@ -132,13 +133,60 @@ class _DashboardState extends State<Dashboard> {
 
   String getCompliment(int hour) {
     if (hour >= 5 && hour < 12) {
-      return 'Good Morning!';
+      return 'Good Morning';
     } else if (hour >= 12 && hour < 17) {
-      return 'Good Afternoon!';
+      return 'Good Afternoon';
     } else {
-      return 'Good Evening!';
+      return 'Good Evening';
     }
   }
+
+  void showLanguageSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Language'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: const Text('English'),
+                onTap: () {
+                  changeLanguage(context, 'en');
+                },
+              ),
+              ListTile(
+                title: const Text('Sinhala'),
+                onTap: () {
+                  changeLanguage(context, 'si');
+                },
+              ),
+              // Add more languages as needed
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> changeLanguage(BuildContext context, String languageCode) async {
+    await setLanguage(languageCode);
+    // Close the dialog
+    Navigator.of(context).pop();
+    // Rebuild the app's UI with the new language
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => ClientHomePage(passedIndex: 1),
+      ),
+    );
+  }
+
+  Future<void> setLanguage(String languageCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language_code', languageCode);
+  }
+
 
   Future<Map<String, dynamic>> fetchData() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -153,17 +201,23 @@ class _DashboardState extends State<Dashboard> {
     return data;
   }
 
-  Future<void> setLanguage(BuildContext context, String languageCode) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('language_code', languageCode);
+  // Future<void> setLanguage(BuildContext context, String languageCode) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('language_code', languageCode);
+  // }
+
+  // Future<void> _toggleLanguage() async {
+  //   setState(() {
+  //     _languageCode = _languageCode == 'en' ? 'si' : 'en';
+  //     setLanguage(context, _languageCode!);
+  //   });
+  // }
+
+  Future<void> initialize() async {
+    await _loadLanguagePreference();
+    updateCompliment();
   }
 
-  Future<void> _toggleLanguage() async {
-    setState(() {
-      _languageCode = _languageCode == 'en' ? 'si' : 'en';
-      setLanguage(context, _languageCode!);
-    });
-  }
 
   @override
   void initState() {
@@ -216,7 +270,7 @@ class _DashboardState extends State<Dashboard> {
                               ), // Change icon as needed
                               color: kDeepBlueColor, // Change color as needed
                               onPressed: () {
-                                // Handle button press
+                                showLanguageSelectionDialog(context);
                               },
                             ),
                           ),
@@ -287,17 +341,17 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
               DashboardItem(
-                title: 'Profile',
+                title: _getTranslatedText('prf'),
                 icon: Icons.badge,
                 function: navigateToProfile,
               ),
               DashboardItem(
-                title: 'Balance',
+                title: _getTranslatedText('blnc'),
                 icon: Icons.account_balance,
                 function: navigateToBalance,
               ),
               DashboardItem(
-                title: 'Trancaction History',
+                title: _getTranslatedText('trns'),
                 icon: Icons.currency_exchange,
                 function: navigateToTransactionHistory,
               ),
@@ -310,22 +364,22 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               DashboardItem(
-                title: 'Help & Support',
+                title: _getTranslatedText('hlp'),
                 icon: Icons.help,
                 function: navigateToHelpSupport,
               ),
               DashboardItem(
-                title: 'Invite Friends',
+                title: _getTranslatedText('invt'),
                 icon: Icons.group_add,
                 function: navigateToInviteFriends,
               ),
               DashboardItem(
-                title: 'Terms & Conditions',
+                title: _getTranslatedText('trms'),
                 icon: Icons.handshake,
                 function: navigateToTermsConditions,
               ),
               DashboardItem(
-                title: 'About Us',
+                title: _getTranslatedText('about'),
                 icon: Icons.groups,
                 function: navigateToAboutUs,
               ),
@@ -334,7 +388,7 @@ class _DashboardState extends State<Dashboard> {
                   signOutUser(context);
                 },
                 child: Text(
-                  'Logout',
+                  _getTranslatedText('lg_out'),
                   style: kJobCardTitleTextStyle.copyWith(
                     color: kAmberColor,
                   ),
@@ -353,7 +407,7 @@ class _DashboardState extends State<Dashboard> {
           onPressed: () {
             dynamic conversationObject = {
               'appId':
-                  '47c5588bfd2fbc504ad1b4d294b8a375', // The [APP_ID](https://dashboard.kommunicate.io/settings/install) obtained from kommunicate dashboard.
+                  '5105cd446c5b2d89ee8995ab67fdfd7e', // The [APP_ID](https://dashboard.kommunicate.io/settings/install) obtained from kommunicate dashboard.
             };
 
             KommunicateFlutterPlugin.buildConversation(conversationObject)
