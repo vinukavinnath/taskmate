@@ -49,85 +49,87 @@ class _DetailsState extends State<Details> {
     double screenWidth = MediaQuery.of(context).size.width;
     return SizedBox(
       width: screenWidth,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Given on: ${widget.createdAt}',
-                    style: kTextStyle,
-                  ),
-                  Text(
-                   'Completed on: ${widget.completeJobTime}',
-                    style: kTextStyle,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Text(
-            widget.jobTitle,
-            style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
-          ),
-          Text(
-            'Title goes here...',
-            style: kTextStyle,
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          Text(
-            'Description',
-            style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
-          ),
-          Text(
-            widget.jobDescription,
-            style: kTextStyle,
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          Text(
-            'Price',
-            style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
-          ),
-          Text(
-            'Rs.${widget.budgetField}.00',
-            style: kTextStyle,
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          Text(
-            'Your Attachments',
-            style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: AttachmentCard(
-                    cardChild: Image.network(imageUrl1), // Display image1 using its URL
-                  ),
-                ),
-                SizedBox(
-                  width: 15.0,
-                ),
-                Expanded(
-                  child: AttachmentCard(
-                    cardChild: Image.network(imageUrl2), // Display image2 using its URL
-                  ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Given on: ${widget.createdAt}',
+                      style: kTextStyle,
+                    ),
+                    Text(
+                     'Completed on: ${widget.completeJobTime}',
+                      style: kTextStyle,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-        ],
+            Text(
+              widget.jobTitle,
+              style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
+            ),
+            Text(
+              'Title goes here...',
+              style: kTextStyle,
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Description',
+              style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
+            ),
+            Text(
+              widget.jobDescription,
+              style: kTextStyle,
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Price',
+              style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
+            ),
+            Text(
+              'Rs.${widget.budgetField}.00',
+              style: kTextStyle,
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Your Attachments',
+              style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: AttachmentCard(
+                      cardChild: Image.network(imageUrl1), // Display image1 using its URL
+                    ),
+                  ),
+                  SizedBox(
+                    width: 15.0,
+                  ),
+                  Expanded(
+                    child: AttachmentCard(
+                      cardChild: Image.network(imageUrl2), // Display image2 using its URL
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

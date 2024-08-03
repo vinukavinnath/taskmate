@@ -47,32 +47,6 @@ class _SendmsgState extends State<Sendmsg> {
                 ),
               ),
               const SizedBox(height: 15),
-              Container(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Icon(Icons.search, size: 20, color: Color(0xFF4B4646)),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      "search",
-                      style: TextStyle(fontSize: 15, color: Color(0xFF4B4646)),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.filter_list, size: 25, color: Color(0xFF4B4646)),
-                    ),
-                  ],
-                ),
-                height: 38,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Colors.white,
-                  border: Border.all(color: Color(0xFF4B4646)),
-                ),
-              ),
             ],
           ),
           backgroundColor: Colors.white,
@@ -100,16 +74,21 @@ class _SendmsgState extends State<Sendmsg> {
                       var message = docs[index];
                       var dateTime = (message['date'] as Timestamp).toDate();
 
+                      bool isRightSide = index % 2 == 0;
+                      Color circleColor = isRightSide ? Color(0xFF16056B) : Color(0xFF5696FA);
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         child: Row(
+                          mainAxisAlignment: isRightSide ? MainAxisAlignment.end : MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
+                            if (!isRightSide) CircleAvatar(
+                              backgroundColor: circleColor,
                               backgroundImage: NetworkImage(message['image']),
                               radius: 20,
                             ),
-                            const SizedBox(width: 10),
+                            if (!isRightSide) const SizedBox(width: 10),
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -140,6 +119,12 @@ class _SendmsgState extends State<Sendmsg> {
                                   ],
                                 ),
                               ),
+                            ),
+                            if (isRightSide) const SizedBox(width: 10),
+                            if (isRightSide) CircleAvatar(
+                              backgroundColor: circleColor,
+                              backgroundImage: NetworkImage(message['image']),
+                              radius: 20,
                             ),
                           ],
                         ),
