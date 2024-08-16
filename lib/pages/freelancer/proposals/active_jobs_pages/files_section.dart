@@ -9,6 +9,7 @@ import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/constants.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:taskmate/pages/freelancer/proposals/active_jobs_pages/receive_msg.dart';
 
 import '../../../../components/snackbar.dart';
 
@@ -227,6 +228,21 @@ class _FilesState extends State<Files> {
               },
               screenWidth: screenWidth,
             ),
+            LightMainButton(
+              title: 'Message',
+              process: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReceiveMsg(
+                      activeJobDoc: widget.activeJobDoc, // Pass the activeJobDoc here
+
+                    ),
+                  ),
+                );
+              },
+              screenWidth: screenWidth,
+            )
           ],
         ),
       ),
