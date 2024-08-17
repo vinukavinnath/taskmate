@@ -19,7 +19,7 @@ class _FreelancerHomePageState extends State<FreelancerHomePage> {
   int _selectedIndex = 2;
 
   final List _items = [
-    Receivemsg(),
+    ReceiveMsg(),
     Proposals(),
     const Jobs(),
     const Dashboard(),
