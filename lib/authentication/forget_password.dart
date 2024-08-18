@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/authentication/log_in.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/components/maintenance_page.dart';
 import 'package:taskmate/components/snackbar.dart';
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/light_main_button.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({super.key});
@@ -18,7 +19,7 @@ class ForgetPassword extends StatefulWidget {
 
 class _ForgetPasswordState extends State<ForgetPassword> {
   String? imagePath;
-
+  String? _languageCode;
 
   Future<void> loadImages(String imageUrl) async {
     try {
@@ -28,11 +29,19 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     }
   }
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
   final _forgetPasswordController = TextEditingController();
 
   @override
   void initState() {
+    _loadLanguagePreference();
     super.initState();
     loadImages('images/magnifier.webp');
     loadImages('images/noise_image.webp');
@@ -54,21 +63,21 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         return MaintenancePage(
           [
             Image.asset('images/magnifier.webp'),
-            const Text(
-              'Check Your Email!',
+             Text(
+              _getTranslatedText('fgt_pop_tit'),
               style: kSubHeadingTextStyle,
               textAlign: TextAlign.center,
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
+             Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                'We’ve sent a password reset link to Inbox',
+                _getTranslatedText('fgt_pop_des1'),
                 style: kTextStyle,
                 textAlign: TextAlign.center,
               ),
             ),
             DarkMainButton(
-                title: 'Check Inbox',
+                title: _getTranslatedText('fgt_pop_btn1'),
                 process: () async {
                   await LaunchApp.openApp(
                     androidPackageName: 'com.google.android.gm',
@@ -76,16 +85,16 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   );
                 },
                 screenWidth: MediaQuery.of(context).size.width),
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+             Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Text(
-                'After resetting the password you can now login to Taskmate with your new password',
+                _getTranslatedText('fgt_pop_des2'),
                 style: kTextStyle,
                 textAlign: TextAlign.center,
               ),
             ),
             LightMainButton(
-                title: 'Login Now',
+                title: _getTranslatedText('login'),
                 process: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -149,24 +158,27 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
+                 Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
                   child: Text(
-                    'Forgot Password',
+                    _getTranslatedText('fgt_ttl'),
                     textAlign: TextAlign.center,
                     style: kHeadingTextStyle,
                   ),
                 ),
-                Image(
+                const Image(
                   image: AssetImage('images/keys.webp'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Column(
                     children: <Widget>[
-                      const Text(
-                        'Enter your email account to reset password',
-                        style: kTextStyle,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          _getTranslatedText('fgt_des'),textAlign: TextAlign.center,
+                          style: kTextStyle,
+                        ),
                       ),
                       const SizedBox(
                         height: 10.0,
@@ -185,13 +197,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                             controller: _forgetPasswordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter the Email';
+                                return _getTranslatedText('pls_ent_eml');
                               }
                               return null; // Return null for valid input
                             },
-                            decoration: const InputDecoration(
+                            decoration:  InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Enter your email here',
+                              hintText: _getTranslatedText('pls_ent_eml'),
                             ),
                           ),
                         ),
@@ -200,7 +212,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         height: 20.0,
                       ),
                       DarkMainButton(
-                          title: 'Continue',
+                          title: _getTranslatedText('continue'),
                           process: () {
                             if (_formKey.currentState!.validate()) {
                               forgetPassword();
@@ -212,7 +224,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   ),
                 ),
                 LightMainButton(
-                    title: 'Cancel',
+                    title: _getTranslatedText('cancel'),
                     process: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -230,5 +242,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

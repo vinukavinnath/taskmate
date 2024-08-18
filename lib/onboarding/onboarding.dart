@@ -45,7 +45,7 @@ class _OnboardingState extends State<Onboarding> {
     return SafeArea(
       child: Scaffold(
         body: _languageCode == null
-            ? Center(
+            ? const Center(
                 child:
                     CircularProgressIndicator()) // Show loading indicator while language is loading
             : Container(
@@ -91,6 +91,7 @@ class _OnboardingState extends State<Onboarding> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 30,
                                     height: 1.2,
+                                    color: kDeepBlueColor,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -160,8 +161,8 @@ class _OnboardingState extends State<Onboarding> {
                         }
                       },
                       title: (currentIndex == contents.length - 1)
-                          ? 'Let\'s Register'
-                          : 'Next',
+                          ? _getTranslatedText('register')
+                          : _getTranslatedText('next'),
                     ),
                     // LightMainButton(
                     //   title: 'Skip',

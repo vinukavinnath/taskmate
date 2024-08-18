@@ -4,6 +4,8 @@ import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/constants.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:taskmate/dashboard/scan_qr.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class InviteFriends extends StatefulWidget {
   const InviteFriends({super.key});
@@ -13,6 +15,7 @@ class InviteFriends extends StatefulWidget {
 }
 
 class _InviteFriendsState extends State<InviteFriends> {
+  String? _languageCode;
   void shareApp() async {
     final result = await Share.shareWithResult(
         'Be a proud member of TaskMate Family! https://tinyurl.com/5n6dapka',
@@ -20,6 +23,17 @@ class _InviteFriendsState extends State<InviteFriends> {
     if (result.status == ShareResultStatus.success) {}
   }
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+@override
+  void initState() {
+  _loadLanguagePreference();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -27,8 +41,8 @@ class _InviteFriendsState extends State<InviteFriends> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Invite Friends',
+          title:  Text(
+            _getTranslatedText('ivt_ttl'),
             style: kHeadingTextStyle,
           ),
           centerTitle: true,
@@ -69,11 +83,11 @@ class _InviteFriendsState extends State<InviteFriends> {
             children: [
               Column(
                 children: [
-                  const Padding(
+                   Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
                     child: Text(
-                      'Discover a world of opportunities for Sri Lankan freelancers with our app! Download now and embark on a journey of creativity, flexibility, and endless possibilities!',
+                        _getTranslatedText('ivt_des'),
                       textAlign: TextAlign.center,
                       style: kJobCardTitleTextStyle,
                     ),
@@ -88,7 +102,7 @@ class _InviteFriendsState extends State<InviteFriends> {
                   SizedBox(
                     width: screenWidth,
                     child: DarkMainButton(
-                      title: 'Scan QR Code',
+                      title: _getTranslatedText('ivt_btn1'),
                       process: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -103,7 +117,7 @@ class _InviteFriendsState extends State<InviteFriends> {
                     child: SizedBox(
                       width: screenWidth,
                       child: LightMainButton(
-                        title: 'Share',
+                        title: _getTranslatedText('ivt_btn2'),
                         process: shareApp,
                       ),
                     ),
@@ -115,5 +129,11 @@ class _InviteFriendsState extends State<InviteFriends> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

@@ -556,7 +556,7 @@ class _LoginState extends State<Login> {
                 ),
               ),
             )
-          : const LoadingScreen(title: 'Please wait. . . '),
+          : LoadingScreen(title: _getTranslatedText('wait')),
     );
   }
 
