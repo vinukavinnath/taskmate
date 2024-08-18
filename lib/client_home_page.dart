@@ -35,7 +35,7 @@ class ClientHomePage extends StatefulWidget {
 
 class _ClientHomePageState extends State<ClientHomePage> {
   late final List _items = [
-    Sendmsg(),
+    SendMsg(),
     const ClientPosted(),
     const ClientJobStatus(),
     Dashboard(

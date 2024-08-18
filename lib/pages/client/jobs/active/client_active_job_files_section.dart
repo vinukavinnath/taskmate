@@ -9,6 +9,8 @@ import 'package:taskmate/constants.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'client_active_jobs_sendmsg.dart';
+
 class ClientActiveJobFiles extends StatefulWidget {
   final String image3Url;
   final String image4Url;
@@ -164,11 +166,20 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
             ),
 
             LightMainButton(
-                title: 'Message',
-                process: () {
-                  // TODO Forward to messaging part
-                },
-                screenWidth: screenWidth)
+              title: 'Message',
+              process: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ClientActiveJobsSendMsg(
+                      activeJobDoc: widget.activeJobDoc,
+                    ),
+                  ),
+                );
+              },
+              screenWidth: screenWidth,
+            )
+
           ],
         ),
       ),
