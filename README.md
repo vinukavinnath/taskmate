@@ -20,7 +20,7 @@ This initiative doesn’t just offer a platform; it aspires to become the corner
 
 ## Authors
 
-- [APGBY Yasaruwan](https://www.linkedin.com/in/basuru-yasaruwan-805820235/ "sdg")
+- [APGBY Yasaruwan](https://www.linkedin.com/in/basuru-yasaruwan-805820235/)
 - [WLV Vinnath](www.linkedin.com/in/vinukavinnath)
 - [GO Kamburugamuwa](https://www.linkedin.com/in/govindu-oshada/)
 - [DTK De Zoysa](https://www.linkedin.com/in/thilina-de-zoysa-a6aa362a4/)
