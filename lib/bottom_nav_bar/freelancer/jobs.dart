@@ -1,10 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:taskmate/components/job_card.dart';
 import 'package:taskmate/constants.dart';
-
-import '../../components/job_card.dart';
 
 class Jobs extends StatefulWidget {
   const Jobs({super.key});
@@ -15,6 +12,7 @@ class Jobs extends StatefulWidget {
 
 class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   late TabController _tabController;
   String searchTerm = '';
 
@@ -23,9 +21,12 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
 
-    // Adding a listener to the search controller to handle debounce
     _searchController.addListener(() {
       _onSearchChanged();
+    });
+
+    _searchFocusNode.addListener(() {
+      setState(() {}); // Update UI based on focus changes
     });
   }
 
@@ -33,6 +34,7 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -102,18 +104,36 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
           child: TabBarView(
             controller: _tabController,
             children: [
-              // Search Tab
+              // "Search" Tab
               Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: TextField(
                       controller: _searchController,
+                      focusNode: _searchFocusNode,
                       decoration: InputDecoration(
                         hintText: 'Search by skills...',
-                        prefixIcon: Icon(Icons.search),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: kDarkGreyColor,
+                        ),
                         border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide.none, // Remove the default border
                           borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          borderSide: const BorderSide(
+                              color:
+                                  kDeepBlueColor), // Border color when enabled
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          borderSide: const BorderSide(
+                              color: kDeepBlueColor,
+                              width: 2.0), // Border color when focused
                         ),
                       ),
                     ),
@@ -121,6 +141,7 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
                   Expanded(
                     child: JobList(
                       searchTerm: searchTerm,
+                      focusNode: _searchFocusNode,
                     ),
                   ),
                 ],
@@ -130,7 +151,33 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
               RecentJobs(screenWidth: screenWidth),
 
               // Urgent Tab
-              UrgentJobs(screenWidth: screenWidth),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          Icon(Icons.paid, color: kDeepBlueColor),
+                          Expanded(
+                            // Wrap Text with Expanded to avoid overflow
+                            child: Text(
+                              'Jobs that need to be completed within 1 Day. Remember, lower time means higher charges.',
+                              textAlign: TextAlign.center,
+                              style: kUserDataGatherTitleTextStyle,
+                              softWrap:
+                                  true, // Allows text to wrap to the next line
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(child: UrgentJobs(screenWidth: screenWidth)),
+                ],
+              ),
             ],
           ),
         ),
@@ -142,11 +189,10 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
 class RecentJobs extends StatelessWidget {
   final double screenWidth;
 
-  RecentJobs({required this.screenWidth});
+  const RecentJobs({required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('jobs').snapshots(),
       builder: (context, snapshot) {
@@ -180,9 +226,9 @@ class RecentJobs extends StatelessWidget {
                   );
                 }
 
-                if (!subSnapshot.hasData ||
-                    subSnapshot.data!.docs.isEmpty) {
-                  return const SizedBox.shrink(); // Avoid returning a widget if no data found
+                if (!subSnapshot.hasData || subSnapshot.data!.docs.isEmpty) {
+                  return const SizedBox
+                      .shrink(); // Avoid returning a widget if no data found
                 }
 
                 final matchingJobDocs = subSnapshot.data!.docs;
@@ -191,8 +237,7 @@ class RecentJobs extends StatelessWidget {
                 final Set<String> uniqueJobIds = Set();
 
                 // Filter out duplicate jobs
-                final filteredJobDocs =
-                matchingJobDocs.where((subDoc) {
+                final filteredJobDocs = matchingJobDocs.where((subDoc) {
                   final jobId = subDoc.id;
                   if (uniqueJobIds.contains(jobId)) {
                     return false; // Skip duplicate job
@@ -221,7 +266,7 @@ class RecentJobs extends StatelessWidget {
 class UrgentJobs extends StatelessWidget {
   final double screenWidth;
 
-  UrgentJobs({required this.screenWidth});
+  const UrgentJobs({required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -259,9 +304,9 @@ class UrgentJobs extends StatelessWidget {
                   );
                 }
 
-                if (!subSnapshot.hasData ||
-                    subSnapshot.data!.docs.isEmpty) {
-                  return const SizedBox.shrink(); // Avoid returning a widget if no data found
+                if (!subSnapshot.hasData || subSnapshot.data!.docs.isEmpty) {
+                  return const SizedBox
+                      .shrink(); // Avoid returning a widget if no data found
                 }
 
                 final matchingJobDocs = subSnapshot.data!.docs;
@@ -270,8 +315,7 @@ class UrgentJobs extends StatelessWidget {
                 final Set<String> uniqueJobIds = Set();
 
                 // Filter out duplicate jobs
-                final filteredJobDocs =
-                matchingJobDocs.where((subDoc) {
+                final filteredJobDocs = matchingJobDocs.where((subDoc) {
                   final jobId = subDoc.id;
                   if (uniqueJobIds.contains(jobId)) {
                     return false; // Skip duplicate job
@@ -299,12 +343,16 @@ class UrgentJobs extends StatelessWidget {
 
 class JobList extends StatelessWidget {
   final String searchTerm;
+  final FocusNode focusNode;
 
-  JobList({required this.searchTerm});
+  const JobList({
+    required this.searchTerm,
+    required this.focusNode,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth=MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('jobs').snapshots(),
@@ -317,60 +365,107 @@ class JobList extends StatelessWidget {
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(
-            child: Text('No jobs found.'),
+            child: Text('Nothing found.'),
           );
         }
 
         final jobDocs = snapshot.data!.docs;
+        List<Widget> jobCards = [];
+        int jobCount = 0;
 
-        return ListView.builder(
-          itemCount: jobDocs.length,
-          itemBuilder: (context, index) {
-            final doc = jobDocs[index];
-            return StreamBuilder<QuerySnapshot>(
-              stream: doc.reference
-                  .collection('jobsnew')
-                  .where('status', isEqualTo: 'new')
-                  .where('skills', arrayContains: searchTerm)
-                  .snapshots(),
-              builder: (context, subSnapshot) {
-                if (subSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+        return FutureBuilder<void>(
+          future: Future.forEach(jobDocs, (QueryDocumentSnapshot doc) async {
+            final subSnapshot = await doc.reference
+                .collection('jobsnew')
+                .where('status', isEqualTo: 'new')
+                .where('skills', arrayContains: searchTerm)
+                .get();
+
+            if (subSnapshot.docs.isNotEmpty) {
+              // Create a Set to keep track of unique job IDs
+              final Set<String> uniqueJobIds = Set();
+
+              // Filter out duplicate jobs
+              final filteredJobDocs = subSnapshot.docs.where((subDoc) {
+                final jobId = subDoc.id;
+                if (uniqueJobIds.contains(jobId)) {
+                  return false; // Skip duplicate job
+                } else {
+                  uniqueJobIds.add(jobId);
+                  return true; // Include unique job
                 }
+              }).toList();
 
-                if (!subSnapshot.hasData ||
-                    subSnapshot.data!.docs.isEmpty) {
-                  return const SizedBox.shrink(); // Avoid returning a widget if no data found
-                }
+              // Add the count of filtered jobs to the total job count
+              jobCount += filteredJobDocs.length;
 
-                final matchingJobDocs = subSnapshot.data!.docs;
-
-                // Create a Set to keep track of unique job IDs
-                final Set<String> uniqueJobIds = Set();
-
-                // Filter out duplicate jobs
-                final filteredJobDocs =
-                matchingJobDocs.where((subDoc) {
-                  final jobId = subDoc.id;
-                  if (uniqueJobIds.contains(jobId)) {
-                    return false; // Skip duplicate job
-                  } else {
-                    uniqueJobIds.add(jobId);
-                    return true; // Include unique job
-                  }
-                }).toList();
-
-                // Customize how you want to display each matching job in the list
-                return Column(
-                  children: filteredJobDocs.map<Widget>((subDoc) {
-                    return JobCard(
-                        mostjobDoc: subDoc, screenWidth: screenWidth);
-                  }).toList(),
-                );
-              },
-            );
+              jobCards.addAll(
+                filteredJobDocs.map<Widget>((subDoc) {
+                  return JobCard(mostjobDoc: subDoc, screenWidth: screenWidth);
+                }).toList(),
+              );
+            }
+          }),
+          builder: (context, futureSnapshot) {
+            if (searchTerm.isEmpty) {
+              return Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.travel_explore,
+                        color: kDeepBlueColor,
+                        size: 24.0,
+                      ),
+                    ),
+                    Text(
+                      'Search for your Skill',
+                      textAlign: TextAlign.center,
+                      style: kUserDataGatherTitleTextStyle,
+                      softWrap: true, // Allows text to wrap to the next line
+                    ),
+                  ],
+                ),
+              );
+            } else if (jobCards.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Nothing found.',
+                  style: kUserDataGatherTitleTextStyle,
+                ),
+              );
+            } else {
+              return Column(
+                children: [
+                  if (jobCount > 0)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.manage_search_rounded,
+                            color: kDeepBlueColor,
+                            size: 24.0,
+                          ),
+                        ),
+                        Text(
+                          'Found $jobCount jobs',
+                          textAlign: TextAlign.center,
+                          style: kUserDataGatherTitleTextStyle,
+                        ),
+                      ],
+                    ),
+                  Expanded(
+                    child: ListView(
+                      children: jobCards,
+                    ),
+                  ),
+                ],
+              );
+            }
           },
         );
       },

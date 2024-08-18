@@ -310,7 +310,7 @@ class _DashboardState extends State<Dashboard> {
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  'TaskMate v1.0',
+                  'TaskMate v2.0',
                 ),
               )
             ],
