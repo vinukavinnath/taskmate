@@ -8,6 +8,8 @@ import 'package:taskmate/components/review_card.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/dashboard/freelancer/dashboard.dart';
 import 'package:taskmate/dashboard/freelancer/edit_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -18,6 +20,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String userId = '';
+  String? _languageCode;
 
   Future<Map<String, dynamic>> fetchData() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -30,6 +33,13 @@ class _ProfileState extends State<Profile> {
     return data;
   }
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
   void _navigateToEditProfile() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -40,6 +50,12 @@ class _ProfileState extends State<Profile> {
 
   void _navigateToBackward() {
     Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
   }
 
   @override
@@ -93,12 +109,12 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children: const [
+                              children:  [
                                 Icon(
                                   Icons.navigate_before,
                                   size: 35.0,
                                 ),
-                                Text('Back'),
+                                Text(_getTranslatedText('bck')),
                               ],
                             ),
                           ),
@@ -209,7 +225,7 @@ class _ProfileState extends State<Profile> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20.0),
                                   child: Text(
-                                    'Hourly Rate: LKR.${snapshot.data?['hourlyRate']}',
+                                    '${_getTranslatedText('free_prof_hr')}: LKR.${snapshot.data?['hourlyRate']}',
                                     style: kUserDataGatherTitleTextStyle,
                                   ),
                                 );
@@ -222,7 +238,7 @@ class _ProfileState extends State<Profile> {
                             },
                           ),
                         ),
-                        const UserDataGatherTitle(title: 'Overview'),
+                         UserDataGatherTitle(title: _getTranslatedText('free_prof_ovw')),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: FutureBuilder(
@@ -253,8 +269,8 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
-                        const UserDataGatherTitle(
-                          title: 'Portfolio',
+                         UserDataGatherTitle(
+                          title: _getTranslatedText('free_prof_port'),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -1302,7 +1318,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         UserDataGatherTitle(
-                          title: 'Reviews',
+                          title: _getTranslatedText('free_prof_rvw'),
                         ),
                         const ReviewCard(
                           imagePath: 'images/client0.webp',
@@ -1323,7 +1339,7 @@ class _ProfileState extends State<Profile> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
                           child: DarkMainButton(
-                              title: 'Edit Profile',
+                              title: _getTranslatedText('edt_prf'),
                               process: _navigateToEditProfile,
                               screenWidth: screenWidth),
                         )
@@ -1337,5 +1353,11 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

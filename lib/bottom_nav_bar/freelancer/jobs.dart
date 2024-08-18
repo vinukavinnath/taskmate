@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taskmate/components/job_card.dart';
 import 'package:taskmate/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class Jobs extends StatefulWidget {
   const Jobs({super.key});
@@ -15,10 +17,12 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
   final FocusNode _searchFocusNode = FocusNode();
   late TabController _tabController;
   String searchTerm = '';
+  String? _languageCode;
 
   @override
   void initState() {
     super.initState();
+    _loadLanguagePreference();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
 
     _searchController.addListener(() {
@@ -36,6 +40,13 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
   }
 
   void _onSearchChanged() {
@@ -57,9 +68,9 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
         appBar: AppBar(
           centerTitle: true,
           automaticallyImplyLeading: false,
-          title: const Center(
+          title:  Center(
             child: Text(
-              'Projects',
+              _getTranslatedText('projects'),
               style: kHeadingTextStyle,
             ),
           ),
@@ -87,10 +98,10 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
               fontFamily: 'Poppins',
             ),
             indicatorColor: kDeepBlueColor,
-            tabs: const [
-              Tab(text: 'Search'),
-              Tab(text: 'Most Recent'),
-              Tab(text: 'Urgent'),
+            tabs:  [
+              Tab(text: _getTranslatedText('tab_bar_1')),
+              Tab(text: _getTranslatedText('tab_bar_2')),
+              Tab(text: _getTranslatedText('tab_bar_3')),
             ],
           ),
         ),
@@ -113,7 +124,7 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
                       controller: _searchController,
                       focusNode: _searchFocusNode,
                       decoration: InputDecoration(
-                        hintText: 'Search by skills...',
+                        hintText: _getTranslatedText('job_srch_des'),
                         prefixIcon: const Icon(
                           Icons.search,
                           color: kDarkGreyColor,
@@ -159,12 +170,12 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
+                        children: [
                           Icon(Icons.paid, color: kDeepBlueColor),
                           Expanded(
                             // Wrap Text with Expanded to avoid overflow
                             child: Text(
-                              'Jobs that need to be completed within 1 Day. Remember, lower time means higher charges.',
+                              _getTranslatedText('job_srch_urg'),
                               textAlign: TextAlign.center,
                               style: kUserDataGatherTitleTextStyle,
                               softWrap:
@@ -183,6 +194,12 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }
 
@@ -341,9 +358,10 @@ class UrgentJobs extends StatelessWidget {
   }
 }
 
-class JobList extends StatelessWidget {
+class JobList extends StatefulWidget {
   final String searchTerm;
   final FocusNode focusNode;
+
 
   const JobList({
     required this.searchTerm,
@@ -351,7 +369,27 @@ class JobList extends StatelessWidget {
   });
 
   @override
+  State<JobList> createState() => _JobListState();
+}
+
+class _JobListState extends State<JobList> {
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+
     double screenWidth = MediaQuery.of(context).size.width;
 
     return StreamBuilder<QuerySnapshot>(
@@ -364,8 +402,8 @@ class JobList extends StatelessWidget {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('Nothing found.'),
+          return Center(
+            child: Text(_getTranslatedText('job_srch_srch_nothg')),
           );
         }
 
@@ -378,7 +416,7 @@ class JobList extends StatelessWidget {
             final subSnapshot = await doc.reference
                 .collection('jobsnew')
                 .where('status', isEqualTo: 'new')
-                .where('skills', arrayContains: searchTerm)
+                .where('skills', arrayContains: widget.searchTerm)
                 .get();
 
             if (subSnapshot.docs.isNotEmpty) {
@@ -407,12 +445,12 @@ class JobList extends StatelessWidget {
             }
           }),
           builder: (context, futureSnapshot) {
-            if (searchTerm.isEmpty) {
+            if (widget.searchTerm.isEmpty) {
               return Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Padding(
+                  children:  [
+                    const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Icon(
                         Icons.travel_explore,
@@ -421,7 +459,7 @@ class JobList extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Search for your Skill',
+                      _getTranslatedText('job_srch_srch_des'),
                       textAlign: TextAlign.center,
                       style: kUserDataGatherTitleTextStyle,
                       softWrap: true, // Allows text to wrap to the next line
@@ -430,9 +468,9 @@ class JobList extends StatelessWidget {
                 ),
               );
             } else if (jobCards.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'Nothing found.',
+                  _getTranslatedText('job_srch_srch_nothg'),
                   style: kUserDataGatherTitleTextStyle,
                 ),
               );
@@ -470,5 +508,11 @@ class JobList extends StatelessWidget {
         );
       },
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

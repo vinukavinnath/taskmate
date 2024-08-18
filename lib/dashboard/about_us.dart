@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class AboutUs extends StatefulWidget {
   const AboutUs({super.key});
@@ -9,6 +11,21 @@ class AboutUs extends StatefulWidget {
 }
 
 class _AboutUsState extends State<AboutUs> {
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -17,8 +34,8 @@ class _AboutUsState extends State<AboutUs> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'About Us',
+          title:  Text(
+            _getTranslatedText('about'),
             style: kHeadingTextStyle,
           ),
           centerTitle: true,
@@ -68,5 +85,11 @@ class _AboutUsState extends State<AboutUs> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

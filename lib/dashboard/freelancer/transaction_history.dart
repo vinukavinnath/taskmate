@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
+
 
 class TransactionHistory extends StatefulWidget {
   const TransactionHistory({super.key});
@@ -9,6 +12,21 @@ class TransactionHistory extends StatefulWidget {
 }
 
 class _TransactionHistoryState extends State<TransactionHistory> {
+
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -17,8 +35,8 @@ class _TransactionHistoryState extends State<TransactionHistory> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Transactions',
+          title: Text(
+            _getTranslatedText('trns'),
             style: kHeadingTextStyle,
           ),
           centerTitle: true,
@@ -69,5 +87,11 @@ class _TransactionHistoryState extends State<TransactionHistory> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

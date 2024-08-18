@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
+
 
 class Balance extends StatefulWidget {
   const Balance({super.key});
@@ -9,6 +12,21 @@ class Balance extends StatefulWidget {
 }
 
 class _BalanceState extends State<Balance> {
+
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -17,8 +35,8 @@ class _BalanceState extends State<Balance> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Balance',
+          title: Text(
+            _getTranslatedText('blnc'),
             style: kHeadingTextStyle,
           ),
           centerTitle: true,
@@ -89,7 +107,7 @@ class _BalanceState extends State<Balance> {
                             ),
                           ),
                           const Text(
-                            'Net Profit',
+                            'Net Cost',
                             style: kJobCardTitleTextStyle,
                           ),
                         ],
@@ -116,5 +134,11 @@ class _BalanceState extends State<Balance> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }
