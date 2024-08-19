@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taskmate/constants.dart';
-import 'receive_job_card.dart';
+import 'package:taskmate/messaging/Receive_job_card.dart';
 
 class ReceiveMsg extends StatelessWidget {
   @override
