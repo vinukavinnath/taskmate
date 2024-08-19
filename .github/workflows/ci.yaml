@@ -30,12 +30,22 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release
-      - name: upload artifact to Firebase App Distribution
+
+      - name: List APK Directory
+        run: ls -la build/app/outputs/flutter-apk/
+
+      - name: Rename APK with Git SHA
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/taskmate-$TIMESTAMP.apk
+
+      - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{secrets.TASKMATE_ANDROID_FIREBASE_APP_ID}}
-#         token: ${{secrets.FIREBASE_TOKEN}}
+#         token: ${{secrets.FIREBASE_TOKEN}} This approach will be deprecated soon
+#         Therefore I moved to service account approach
           serviceCredentialsFileContent: ${{ secrets.TASKMATE_SERVICE_CREDENTIAL}}
           groups: testers
-          file: app/build/outputs/apk/release/app-release-unsigned.apk
+          file: build/app/outputs/flutter-apk/taskmate-$TIMESTAMP.apk
 
