@@ -47,10 +47,28 @@ jobs:
       - name: List APK Directory after renaming
         run: ls -la build/app/outputs/flutter-apk/
 
+      - name: Print Environment Variables
+        run: env
+
+      - name: Generate Dynamic Release Notes
+        id: generate_release_notes
+        run: |
+          # Fetches commits
+          COMMITS=$(git log --pretty=format:"%h - %s" -n 5)
+          
+          # Create release notes file
+          echo "Release notes for taskmate-${{ env.TIMESTAMP }} version" > release_notes.txt
+          echo "### Recent Changes:" >> release_notes.txt
+          echo "$COMMITS" >> release_notes.txt
+
+          # Store the release notes content as an output
+          echo "::set-output name=release_notes::$(cat release_notes.txt)"
+
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.TASKMATE_ANDROID_FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.TASKMATE_SERVICE_CREDENTIAL }}
-          groups: testers
+          groups: taskmate-beta-testers
           file: build/app/outputs/flutter-apk/taskmate-${{ env.TIMESTAMP }}.apk
+          releaseNotes: ${{ steps.generate_release_notes.outputs.release_notes }}
