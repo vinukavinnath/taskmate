@@ -50,15 +50,15 @@ jobs:
       - name: Generate Dynamic Release Notes
         id: generate_release_notes
         run: |
-          # Fetches commits
+#         Fetches commits
           COMMITS=$(git log --pretty=format:"%h - %s" -n 5)
           
-          # Create release notes file
+#         Create release notes file
           echo "Release notes for taskmate-${{ env.TIMESTAMP }} version" > release_notes.txt
           echo "### Recent Changes:" >> release_notes.txt
           echo "$COMMITS" >> release_notes.txt
 
-          # Store the release notes content as an output
+#         Store the release notes content as an output
           echo "release_notes=$(cat release_notes.txt)" >> $GITHUB_ENV
 
       - name: Upload artifact to Firebase App Distribution
