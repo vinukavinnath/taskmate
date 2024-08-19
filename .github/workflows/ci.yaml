@@ -8,12 +8,13 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clones repository
+      - name: Clone repository
         uses: actions/checkout@v3
 
       - name: Setup Flutter
@@ -25,8 +26,9 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-#      - name: Run Tests
-#        run: flutter test
+      # Uncomment if you want to run tests
+      # - name: Run Tests
+      #   run: flutter test
 
       - name: Build APK
         run: flutter build apk --release
@@ -34,11 +36,13 @@ jobs:
       - name: List APK Directory
         run: ls -la build/app/outputs/flutter-apk/
 
+      - name: Set Timestamp
+        id: set_timestamp
+        run: echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Rename APK with Timestamp
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          echo $TIMESTAMP
-          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/taskmate-$TIMESTAMP.apk
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/taskmate-${{ env.TIMESTAMP }}.apk
 
       - name: List APK Directory after renaming
         run: ls -la build/app/outputs/flutter-apk/
@@ -46,10 +50,7 @@ jobs:
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{secrets.TASKMATE_ANDROID_FIREBASE_APP_ID}}
-#         token: ${{secrets.FIREBASE_TOKEN}} This approach will be deprecated soon
-#         Therefore I moved to service account approach
-          serviceCredentialsFileContent: ${{ secrets.TASKMATE_SERVICE_CREDENTIAL}}
+          appId: ${{ secrets.TASKMATE_ANDROID_FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.TASKMATE_SERVICE_CREDENTIAL }}
           groups: testers
-          file: build/app/outputs/flutter-apk/taskmate-$TIMESTAMP.apk
-
+          file: build/app/outputs/flutter-apk/taskmate-${{ env.TIMESTAMP }}.apk
