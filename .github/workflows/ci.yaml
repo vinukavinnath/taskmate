@@ -34,10 +34,14 @@ jobs:
       - name: List APK Directory
         run: ls -la build/app/outputs/flutter-apk/
 
-      - name: Rename APK with Git SHA
+      - name: Rename APK with Timestamp
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo $TIMESTAMP
           mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/taskmate-$TIMESTAMP.apk
+
+      - name: List APK Directory after renaming
+        run: ls -la build/app/outputs/flutter-apk/
 
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
