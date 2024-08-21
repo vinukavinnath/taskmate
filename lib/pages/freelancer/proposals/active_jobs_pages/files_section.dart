@@ -111,6 +111,8 @@ class _FilesState extends State<Files> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    final subData = widget.activeJobDoc.data() as Map<String, dynamic>;
+    final jobTitle = subData['jobTitle'] as String;
 
     return SingleChildScrollView(
       child: SizedBox(
@@ -162,7 +164,7 @@ class _FilesState extends State<Files> {
                             Text(
                               'Delete',
                               style: kTextStyle,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -235,7 +237,8 @@ class _FilesState extends State<Files> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ReceiveMsg(
-                      activeJobDoc: widget.activeJobDoc, // Pass the activeJobDoc here
+                      activeJobDoc: widget.activeJobDoc,
+                      jobtitle: jobTitle,// Pass the activeJobDoc here
 
                     ),
                   ),

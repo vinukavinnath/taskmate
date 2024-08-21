@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/constants.dart';
-import 'package:taskmate/pages/client/jobs/active/client_active_job_details.dart';
-
-import '../pages/client/jobs/active/client_active_jobs_sendmsg.dart';
 import '../pages/freelancer/proposals/active_jobs_pages/receive_msg.dart';
-import 'Client_Complete_Jobs_send_msg.dart';
 import 'Freelancer_Complete_Jobs_receive_msg.dart';
 
 class ReceiveJobCard extends StatelessWidget {
@@ -49,61 +46,74 @@ class ReceiveJobCard extends StatelessWidget {
 
     String status = subData['status'] ?? ''; // Assuming you have 'status' field
 
-    return InkWell(
-      onTap: () {
-        if (status == 'active') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ReceiveMsg(
-                activeJobDoc: activeJobDoc,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: InkWell(
+        onTap: () {
+          if (status == 'active') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ReceiveMsg(
+                  activeJobDoc: activeJobDoc,
+                  jobtitle:jobTitle,
+                ),
               ),
-            ),
-          );
-        } else if (status == 'complete') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => FreelancerCompleteJobsReceiveMsg(
-                activeJobDoc: activeJobDoc,
+            );
+          } else if (status == 'complete') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              CusSnackBar(
+                backColor: kSuccessGreenColor,
+                time: 3,
+                title: 'You\'ve Completed this Job',
+                icon: Icons.task,
               ),
+            );
+
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => FreelancerCompleteJobsReceiveMsg(
+            //       activeJobDoc: activeJobDoc,
+            //     ),
+            //   ),
+            // );
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 4.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          width: screenWidth,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(
+              color: kDeepBlueColor,
+              width: 1.0,
             ),
-          );
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0),
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        width: screenWidth,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          border: Border.all(
-            color: kDeepBlueColor,
-            width: 1.0,
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                jobTitle,
-                style: kJobCardTitleTextStyle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  jobTitle,
+                  style: kJobCardTitleTextStyle,
+                ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Budget LKR.${budget.toString()}',
-                  style: kJobCardDescriptionTextStyle,
-                ),
-                Text(
-                  createdAt,
-                  style: kJobCardDescriptionTextStyle,
-                ),
-              ],
-            ),
-          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Budget LKR.${budget.toString()}',
+                    style: kJobCardDescriptionTextStyle,
+                  ),
+                  Text(
+                    createdAt,
+                    style: kJobCardDescriptionTextStyle,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

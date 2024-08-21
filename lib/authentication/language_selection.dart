@@ -29,7 +29,7 @@ class LanguageSelectionScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           decoration: const BoxDecoration(
             image: DecorationImage(
               repeat: ImageRepeat.repeat,

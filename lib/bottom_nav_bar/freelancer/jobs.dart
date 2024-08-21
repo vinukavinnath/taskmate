@@ -171,7 +171,7 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Icon(Icons.paid, color: kDeepBlueColor),
+                          const Icon(Icons.paid, color: kDeepBlueColor),
                           Expanded(
                             // Wrap Text with Expanded to avoid overflow
                             child: Text(
