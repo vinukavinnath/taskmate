@@ -179,7 +179,7 @@ class _ReceiveMsgState extends State<ReceiveMsg> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
                     Expanded(

@@ -92,6 +92,7 @@ class ReceiveJobCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Text(status.toUpperCase(),style: status=='complete'?kUserDataGatherTitleTextStyle.copyWith(color: kOceanBlueColor):kUserDataGatherTitleTextStyle.copyWith(color: kSuccessGreenColor),),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(

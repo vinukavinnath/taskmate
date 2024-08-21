@@ -70,7 +70,7 @@ class _ReceiveMsgState extends State<ReceiveMsg> {
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return const Center(
-                child: Text('No jobs found.'),
+                child: Text('No Messages Found.'),
               );
             }
 
@@ -103,6 +103,7 @@ class _ReceiveMsgState extends State<ReceiveMsg> {
 
                     return Column(
                       children: jobDocs.map<Widget>((subDoc) {
+                        // final status = subDoc['status'];
                         return ReceiveJobCard(activeJobDoc: subDoc);
                       }).toList(),
                     );
