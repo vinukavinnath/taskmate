@@ -8,7 +8,7 @@ import 'package:taskmate/components/review_card.dart';
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/dashboard/freelancer/dashboard.dart';
 import 'package:taskmate/dashboard/freelancer/edit_profile.dart';
-import 'package:taskmate/messaging/Chatscreen.dart';
+//import 'package:taskmate/messaging/Chatscreen.dart';
 
 class BiddedFreelancerProfile extends StatefulWidget {
   final QueryDocumentSnapshot pendingJobDoc;
@@ -95,32 +95,32 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => Chatscreen(),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 6.0,
-                                  backgroundColor: kAmberColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Message',
-                                  style: TextStyle(
-                                    color: kDeepBlueColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: ElevatedButton(
+                            //     onPressed: () {
+                            //       Navigator.of(context).push(
+                            //         MaterialPageRoute(
+                            //           builder: (context) => Chatscreen(),
+                            //         ),
+                            //       );
+                            //     },
+                            //     style: ElevatedButton.styleFrom(
+                            //       elevation: 6.0,
+                            //       backgroundColor: kAmberColor,
+                            //       shape: RoundedRectangleBorder(
+                            //         borderRadius: BorderRadius.circular(20.0),
+                            //       ),
+                            //     ),
+                            //     child: const Text(
+                            //       'Message',
+                            //       style: TextStyle(
+                            //         color: kDeepBlueColor,
+                            //         fontWeight: FontWeight.bold,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -1241,13 +1241,13 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                               'them into an easily recognizable logo.',
                           username: 'Kapila Silva',
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: DarkMainButton(
-                              title: 'Edit Profile',
-                              process: _navigateToEditProfile,
-                              screenWidth: screenWidth),
-                        )
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        //   child: DarkMainButton(
+                        //       title: 'Edit Profile',
+                        //       process: _navigateToEditProfile,
+                        //       screenWidth: screenWidth),
+                        // )
                       ],
                     ),
                   ],

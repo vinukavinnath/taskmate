@@ -95,7 +95,7 @@ class _ReceiveMsgState extends State<ReceiveMsg> {
                         subSnapshot.data!.docs.isEmpty) {
                       return const Center(
                         child: Text(
-                            'No jobs with status "active" or "complete" found'),
+                            ''),
                       );
                     }
 
