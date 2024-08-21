@@ -50,7 +50,7 @@ class _JobsState extends State<Jobs> with SingleTickerProviderStateMixin {
   }
 
   void _onSearchChanged() {
-    final value = _searchController.text.trim();
+    final value = _searchController.text.trim().toLowerCase();
     if (value != searchTerm) {
       setState(() {
         searchTerm = value;

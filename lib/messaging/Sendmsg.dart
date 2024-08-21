@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:taskmate/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 import '../pages/client/jobs/active/client_active_job_card.dart';
 import 'Send_Job_card.dart';
 
@@ -13,6 +15,19 @@ class SendMsg extends StatefulWidget {
 }
 
 class _SendMsgState extends State<SendMsg> {
+  String? _languageCode;
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -22,10 +37,33 @@ class _SendMsgState extends State<SendMsg> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Messages"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            _getTranslatedText('message'),
+            style: kHeadingTextStyle,
+          ),
+        ),
+        elevation: 0,
+        flexibleSpace: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'images/noise_image.webp',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('images/noise_image.webp'),
+          ),
+        ),
         child: SizedBox(
           width: screenWidth,
           child: StreamBuilder<QuerySnapshot>(
@@ -88,5 +126,11 @@ class _SendMsgState extends State<SendMsg> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

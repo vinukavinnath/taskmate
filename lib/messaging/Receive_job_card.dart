@@ -36,8 +36,10 @@ class ReceiveJobCard extends StatelessWidget {
         budget = parsedBudget.toString();
       }
     }
-    String imageUrl1 = subData['imageUrl1'] ?? ''; // Replace 'imageUrl1' with the actual field name
-    String imageUrl2 = subData['imageUrl2'] ?? ''; // Replace 'imageUrl2' with the actual field name
+    String imageUrl1 = subData['imageUrl1'] ??
+        ''; // Replace 'imageUrl1' with the actual field name
+    String imageUrl2 = subData['imageUrl2'] ??
+        ''; // Replace 'imageUrl2' with the actual field name
 
     if (createdAtTimestamp != null) {
       DateTime createdAtDateTime = createdAtTimestamp.toDate();
@@ -55,7 +57,7 @@ class ReceiveJobCard extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => ReceiveMsg(
                   activeJobDoc: activeJobDoc,
-                  jobtitle:jobTitle,
+                  jobtitle: jobTitle,
                 ),
               ),
             );
@@ -78,43 +80,116 @@ class ReceiveJobCard extends StatelessWidget {
             // );
           }
         },
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-          width: screenWidth,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            border: Border.all(
-              color: kDeepBlueColor,
-              width: 1.0,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(status.toUpperCase(),style: status=='complete'?kUserDataGatherTitleTextStyle.copyWith(color: kOceanBlueColor):kUserDataGatherTitleTextStyle.copyWith(color: kSuccessGreenColor),),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  jobTitle,
-                  style: kJobCardTitleTextStyle,
+        child: Stack(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+              width: screenWidth,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                border: Border.all(
+                  color: kDeepBlueColor,
+                  width: 1.0,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
                   Text(
-                    'Budget LKR.${budget.toString()}',
-                    style: kJobCardDescriptionTextStyle,
+                    status.toUpperCase(),
+                    style: status == 'complete'
+                        ? kUserDataGatherTitleTextStyle.copyWith(
+                            color: kOceanBlueColor)
+                        : kUserDataGatherTitleTextStyle.copyWith(
+                            color: kSuccessGreenColor),
                   ),
-                  Text(
-                    createdAt,
-                    style: kJobCardDescriptionTextStyle,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      jobTitle,
+                      style: kJobCardTitleTextStyle,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Budget LKR.${budget.toString()}',
+                        style: kJobCardDescriptionTextStyle,
+                      ),
+                      Text(
+                        createdAt,
+                        style: kJobCardDescriptionTextStyle,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 8.0,
+              right: 8.0,
+              child: IconButton(
+                icon: const Icon(Icons.delete, color: kWarningRedColor),
+                onPressed: () async {
+                  // try {
+                  //   // Define the document reference for the job document
+                  //   final jobDocRef = FirebaseFirestore.instance
+                  //       .collection('jobs') // Main collection
+                  //       .doc(activeJobDoc.id) // Document ID
+                  //       .collection(
+                  //           'jobsnew') // Sub-collection within the job document
+                  //       .doc(activeJobDoc
+                  //           .id); // Document ID within jobsnew sub-collection
+                  //
+                  //   // Define the collection reference for the messages sub-collection
+                  //   final messagesCollectionRef =
+                  //       jobDocRef.collection('messages');
+                  //
+                  //   // Retrieve all documents in the messages sub-collection
+                  //   final messagesSnapshot = await messagesCollectionRef.get();
+                  //
+                  //   // Create a batch to perform multiple deletions
+                  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+                  //
+                  //   // Delete each document in the messages sub-collection
+                  //   for (var doc in messagesSnapshot.docs) {
+                  //     batch.delete(doc.reference);
+                  //   }
+                  //
+                  //   // Commit the batch to delete all documents in the messages sub-collection
+                  //   await batch.commit();
+                  //
+                  //   // Delete the parent job document after deleting the messages sub-collection
+                  //   // await jobDocRef.delete();
+                  //
+                  //   // Show success message
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     CusSnackBar(
+                  //       backColor: kWarningRedColor,
+                  //       time: 3,
+                  //       title:
+                  //           'Message deleted successfully',
+                  //       icon: Icons.delete,
+                  //     ),
+                  //   );
+                  // } catch (e) {
+                  //   // Show error message if deletion fails
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     CusSnackBar(
+                  //       backColor: kWarningRedColor,
+                  //       time: 3,
+                  //       title: 'Failed to delete message: $e',
+                  //       icon: Icons.error,
+                  //     ),
+                  //   );
+                  // }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

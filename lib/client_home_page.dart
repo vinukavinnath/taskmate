@@ -4,6 +4,7 @@ import 'package:taskmate/bottom_nav_bar/client/client_account.dart';
 import 'package:taskmate/bottom_nav_bar/client/client_job_status.dart';
 import 'package:taskmate/bottom_nav_bar/client/client_messaging.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:taskmate/constants.dart';
 import 'package:taskmate/dashboard/client/dashboard.dart';
 
 import 'package:taskmate/bottom_nav_bar/client/client_posted.dart';
@@ -61,6 +62,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
             ),
           ),
           child: GNav(
+            activeColor: kAmberColor,
             gap: 10.0,
             selectedIndex: widget.passedIndex,
             onTabChange: (int index) {
