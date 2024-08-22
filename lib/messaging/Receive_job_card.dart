@@ -100,9 +100,9 @@ class _ReceiveJobCardState extends State<ReceiveJobCard> {
                       status.toUpperCase(),
                       style: status == 'complete'
                           ? kUserDataGatherTitleTextStyle.copyWith(
-                          color: kOceanBlueColor)
+                              color: kOceanBlueColor)
                           : kUserDataGatherTitleTextStyle.copyWith(
-                          color: kSuccessGreenColor),
+                              color: kSuccessGreenColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -133,9 +133,11 @@ class _ReceiveJobCardState extends State<ReceiveJobCard> {
                 child: IconButton(
                   icon: const Icon(Icons.delete, color: kWarningRedColor),
                   onPressed: () async {
-                    setState(() {
-                      isVisible = false;
-                    });
+                    setState(
+                      () {
+                        isVisible = false;
+                      },
+                    );
                   },
                 ),
               ),
