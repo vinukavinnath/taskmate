@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 
 import 'package:taskmate/constants.dart';
 import 'package:taskmate/pages/client/jobs/active/client_active_jobs_sendmsg.dart';
 
-import 'Client_Complete_Jobs_send_msg.dart';
 
 class SendJobCard extends StatefulWidget {
   SendJobCard({
@@ -54,68 +54,94 @@ class _SendJobCardState extends State<SendJobCard> {
 
     final jobStatus = subData['status'] as String;
 
-    return InkWell(
-      onTap: () {
-        if (jobStatus == 'active') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ClientActiveJobsSendMsg(
-                activeJobDoc: widget.activeJobDoc,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: InkWell(
+        onTap: () {
+          if (jobStatus == 'active') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ClientActiveJobsSendMsg(
+                  activeJobDoc: widget.activeJobDoc,
+                  jobtitle: jobTitle,
+                ),
               ),
-            ),
-          );
-        } else if (jobStatus == 'complete') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ClientCompleteJobsSendMsg(
-                activeJobDoc: widget.activeJobDoc,
+            );
+          } else if (jobStatus == 'complete') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              CusSnackBar(
+                backColor: kSuccessGreenColor,
+                time: 3,
+                title: 'You\'ve Completed this Job',
+                icon: Icons.task,
               ),
-            ),
-          );
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0),
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        width: screenWidth,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          border: Border.all(color: kDeepBlueColor, width: 1.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
+            );
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => ClientCompleteJobsSendMsg(
+            //       activeJobDoc: widget.activeJobDoc,
+            //     ),
+            //   ),
+            // );
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 4.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          width: screenWidth,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(color: kDeepBlueColor, width: 1.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      jobStatus.toUpperCase(),
+                      style: jobStatus == 'complete'
+                          ? kUserDataGatherTitleTextStyle.copyWith(
+                          color: kOceanBlueColor)
+                          : kUserDataGatherTitleTextStyle.copyWith(
+                          color: kSuccessGreenColor),
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          jobTitle,
+                          style: kJobCardTitleTextStyle,
+                        ),
+                        const Icon(
+                          Icons.arrow_circle_right,
+                          color: kDeepBlueColor,
+                          size: 25.0,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    jobTitle,
-                    style: kJobCardTitleTextStyle,
+                    'Budget LKR.${budget.toString()}',
+                    style: kJobCardDescriptionTextStyle,
                   ),
-                  Icon(
-                    Icons.arrow_circle_right,
-                    color: kDeepBlueColor,
-                    size: 25.0,
+                  Text(
+                    createdAt,
+                    style: kJobCardDescriptionTextStyle,
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Budget LKR.${budget.toString()}',
-                  style: kJobCardDescriptionTextStyle,
-                ),
-                Text(
-                  createdAt,
-                  style: kJobCardDescriptionTextStyle,
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
