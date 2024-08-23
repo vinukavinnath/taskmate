@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/constants.dart';
 
 class ClientActiveJobsSendMsg extends StatefulWidget {
@@ -40,25 +41,29 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
 
         _messageController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Message sent successfully'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Message sent successfully'),
+        //     duration: Duration(seconds: 2),
+        //   ),
+        // );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending message: $e'),
-            duration: const Duration(seconds: 2),
+          CusSnackBar(
+            backColor: kWarningRedColor,
+            time: 2,
+            title: 'Message was not Sent!',
+            icon: Icons.error,
           ),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a message'),
-          duration: Duration(seconds: 2),
+        CusSnackBar(
+          backColor: kAmberColor,
+          time: 2,
+          title: 'Please type any Message',
+          icon: Icons.feedback,
         ),
       );
     }

@@ -11,9 +11,7 @@ class BiddedFreelancers extends StatefulWidget {
     Key? key,
     required this.pendingjobDoc,
     required this.jobTitle,
-
   }) : super(key: key);
-
 
   @override
   State<BiddedFreelancers> createState() => _BiddedFreelancersState();
@@ -22,14 +20,15 @@ class BiddedFreelancers extends StatefulWidget {
 class _BiddedFreelancersState extends State<BiddedFreelancers> {
   late CollectionReference bidsCollection;
 
+  @override
   void initState() {
     super.initState();
     bidsCollection = widget.pendingjobDoc.reference.collection('bidsjobs');
   }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
 
     return SafeArea(
       child: Scaffold(
@@ -80,24 +79,47 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
                   future: bidsCollection.get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
 
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     }
-                    // Process and display your data here
-                    List<QueryDocumentSnapshot> bidDocuments = snapshot.data!.docs;
 
-                    return Column(
-                      children: bidDocuments.map((bidDoc) {
-                        return BiddedFreelancerCard(
-                            bidDoc: bidDoc,
-                           jobTitle: widget.jobTitle,
-                          pendingjobDoc: widget.pendingjobDoc,
-                        );
-                      }).toList(),
-                    );
+                    // Process and display your data here
+                    List<QueryDocumentSnapshot> bidDocuments =
+                        snapshot.data?.docs ?? [];
+
+                    if (bidDocuments.isEmpty) {
+                      return Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('gifs/sand_wait.gif'),
+                            const Text(
+                              'No Proposals Yet!',
+                              style: kHeadingTextStyle,
+                            ),
+                            const Text(
+                              'But wait! Still have some Luck!',
+                              style: kUserDataGatherTitleTextStyle,
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Expanded(
+                        child: ListView(
+                          children: bidDocuments.map((bidDoc) {
+                            return BiddedFreelancerCard(
+                              bidDoc: bidDoc,
+                              jobTitle: widget.jobTitle,
+                              pendingjobDoc: widget.pendingjobDoc,
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

@@ -71,11 +71,20 @@ class _VerificationPendingState extends State<VerificationPending> {
                             if (isVerified) {
                               // If verified, navigate to FreelancerHomePage
                               if (context.mounted) {
-                                Navigator.pushReplacement(
-                                  context,
+                                // Navigator.pushReplacement(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) =>
+                                //           const FreelancerHomePage()),
+                                // );
+
+                                Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const FreelancerHomePage()),
+                                    builder: (context) =>
+                                        const FreelancerHomePage(),
+                                  ), // Replace with your new page
+                                  (Route<dynamic> route) =>
+                                      false, // This condition removes all previous routes
                                 );
                               }
                             } else {
@@ -85,11 +94,19 @@ class _VerificationPendingState extends State<VerificationPending> {
                               }); // Update with a boolean value
 
                               if (context.mounted) {
-                                Navigator.pushReplacement(
-                                  context,
+                                // Navigator.pushReplacement(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) =>
+                                //           const VerificationFailed()),
+                                // );
+
+                                Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const VerificationFailed()),
+                                          const VerificationFailed()), // Replace with your new page
+                                  (Route<dynamic> route) =>
+                                      false, // This condition removes all previous routes
                                 );
                               }
                             }

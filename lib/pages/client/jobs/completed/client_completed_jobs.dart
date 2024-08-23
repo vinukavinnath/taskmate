@@ -11,8 +11,6 @@ class ClientCompletedJobs extends StatefulWidget {
 }
 
 class _ClientCompletedJobsState extends State<ClientCompletedJobs> {
-
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -21,68 +19,65 @@ class _ClientCompletedJobsState extends State<ClientCompletedJobs> {
     String? userUid = FirebaseAuth.instance.currentUser?.uid;
 
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        child: SizedBox(
-          width: screenWidth,
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('jobs').snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('jobs').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(
-                  child: Text('No documents found.'),
-                );
-              }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text('No documents found.'),
+            );
+          }
 
-              final jobDocs = snapshot.data!.docs;
+          final jobDocs = snapshot.data!.docs;
 
-              return Column(
-                children: jobDocs.map<Widget>((doc) {
-                  // Check if the job belongs to the current user
-                  if (doc.id == userUid) {
-                    return StreamBuilder<QuerySnapshot>(
-                      stream: doc.reference
-                          .collection('jobsnew')
-                          .where('status', isEqualTo: 'complete')
-                          .snapshots(),
-                      builder: (context, subSnapshot) {
-                        if (subSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (!subSnapshot.hasData ||
-                            subSnapshot.data!.docs.isEmpty) {
-                          return const Center(
-                            child: Text('No complete jobs found'),
-                          );
-                        }
-
-                        final activeJobDocs = subSnapshot.data!.docs;
-
-                        return Column(
-                          children: activeJobDocs.map<Widget>((subDoc) {
-                            return ClientCompletedJobCard(completeJobDoc: subDoc);
-                          }).toList(),
+          return SingleChildScrollView(
+            child: Column(
+              children: jobDocs.map<Widget>((doc) {
+                // Check if the job belongs to the current user
+                if (doc.id == userUid) {
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: doc.reference
+                        .collection('jobsnew')
+                        .where('status', isEqualTo: 'complete')
+                        .snapshots(),
+                    builder: (context, subSnapshot) {
+                      if (subSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    );
-                  } else {
-                    return Container(); // If the job doesn't belong to the current user
-                  }
-                }).toList(),
-              );
-            },
-          ),
-        ),
+                      }
+
+                      if (!subSnapshot.hasData ||
+                          subSnapshot.data!.docs.isEmpty) {
+                        return const Center(
+                          child: Text('No completed jobs found'),
+                        );
+                      }
+
+                      final activeJobDocs = subSnapshot.data!.docs;
+
+                      return Column(
+                        children: activeJobDocs.map<Widget>((subDoc) {
+                          return ClientCompletedJobCard(
+                              completeJobDoc: subDoc);
+                        }).toList(),
+                      );
+                    },
+                  );
+                } else {
+                  return Container(); // If the job doesn't belong to the current user
+                }
+              }).toList(),
+            ),
+          );
+        },
       ),
     );
   }

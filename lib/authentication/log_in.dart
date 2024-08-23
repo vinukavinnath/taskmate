@@ -107,17 +107,36 @@ class _LoginState extends State<Login> {
 
       if (context.mounted) {
         (currentUserRole == 0)
-            ? Navigator.of(context).pushReplacement(
+            ?
+            // Navigator.of(context).pushReplacement(
+            //         MaterialPageRoute(
+            //           builder: (context) => const FreelancerHomePage(),
+            //         ),
+            //       )
+
+            Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => const FreelancerHomePage(),
-                ),
+                    builder: (context) =>
+                        const FreelancerHomePage()), // Replace with your new page
+                (Route<dynamic> route) =>
+                    false, // This condition removes all previous routes
               )
-            : Navigator.of(context).pushReplacement(
+            :
+            // Navigator.of(context).pushReplacement(
+            //         MaterialPageRoute(
+            //           builder: (context) => ClientHomePage(
+            //             passedIndex: 1,
+            //           ),
+            //         ),
+            //       );
+
+            Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => ClientHomePage(
-                    passedIndex: 1,
-                  ),
-                ),
+                    builder: (context) => ClientHomePage(
+                          passedIndex: 1,
+                        )), // Replace with your new page
+                (Route<dynamic> route) =>
+                    false, // This condition removes all previous routes
               );
       }
     } on FirebaseAuthException catch (e) {
@@ -418,8 +437,8 @@ class _LoginState extends State<Login> {
                                                   CusSnackBar(
                                                     backColor: kWarningRedColor,
                                                     time: 3,
-                                                    title:
-                                                        _getTranslatedText('usr_n_avl'),
+                                                    title: _getTranslatedText(
+                                                        'usr_n_avl'),
                                                     icon: Icons.dangerous,
                                                   ),
                                                 );

@@ -89,7 +89,7 @@ class _ProfileClientAddphotoState extends State<ProfileClientAddphoto> {
 
   void _submitDetails() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
     // Upload image to Firebase Storage and get the download URL
     final String downloadUrl =
@@ -124,21 +124,29 @@ class _ProfileClientAddphotoState extends State<ProfileClientAddphoto> {
         'profilePhotoUrl': downloadUrl,
       });
       setState(() {
-        isLoading=false;
+        isLoading = false;
       });
 
       // Navigate back to the previous page or any other page
       if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ClientHomePage(
-              passedIndex: 1,
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(
+        //     builder: (context) => ClientHomePage(
+        //       passedIndex: 1,
+        //
+        //         // client: widget.client,
+        //         // downloadUrl: downloadUrl,
+        //         // selectedIndex: 1,
+        //         ),
+        //   ),
+        // );
 
-                // client: widget.client,
-                // downloadUrl: downloadUrl,
-                // selectedIndex: 1,
-                ),
-          ),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => ClientHomePage(
+                    passedIndex: 1,
+                  )),
+          (Route<dynamic> route) => false,
         );
       }
     }

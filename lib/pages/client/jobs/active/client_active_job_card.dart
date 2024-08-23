@@ -30,6 +30,7 @@ class _ClientActiveJobCardState extends State<ClientActiveJobCard> {
     String createdAt = '';
     final jobDescription = subData['jobDescription'] as String;
     final budgetField = subData['budget'];
+    final jobID = subData['JobID'];
     String budget = '0.0'; // Initialize with a default value
 
     if (budgetField is int) {
@@ -92,7 +93,7 @@ class _ClientActiveJobCardState extends State<ClientActiveJobCard> {
                     jobTitle,
                     style: kJobCardTitleTextStyle,
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_circle_right,
                     color: kDeepBlueColor,
                     size: 25.0,
@@ -101,7 +102,7 @@ class _ClientActiveJobCardState extends State<ClientActiveJobCard> {
               ),
             ),
             Text(
-              'Freelancer: Kesara',
+              'Job ID: #$jobID',
               style: kTextStyle,
             ),
             Row(

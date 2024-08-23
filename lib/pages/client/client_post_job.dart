@@ -76,11 +76,11 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
   void selectService(String serviceName) {
     setState(() {
-      _skills.add(serviceName.toLowerCase()); // Convert to lowercase before adding
+      _skills
+          .add(serviceName.toLowerCase()); // Convert to lowercase before adding
       skillController.text = _skills.join(', '); // Update the text field
     });
   }
-
 
   Future<void> uploadFile(int imageNumber) async {
     try {
@@ -129,13 +129,13 @@ class _ClientPostJobState extends State<ClientPostJob> {
   }
 
   Future<void> addJobToFirestore(
-      String jobTitle,
-      String jobDescription,
-      int dayCount,
-      int Percentage,
-      int releaseMoney,
-      int budget,
-      ) async {
+    String jobTitle,
+    String jobDescription,
+    int dayCount,
+    int Percentage,
+    int releaseMoney,
+    int budget,
+  ) async {
     try {
       // Get the current user's UID from FirebaseAuth
       User? user = FirebaseAuth.instance.currentUser;
@@ -148,7 +148,7 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Get a reference to the Firestore collection
       CollectionReference jobsCollection =
-      FirebaseFirestore.instance.collection('jobs');
+          FirebaseFirestore.instance.collection('jobs');
 
       // Generate a unique job ID (e.g., using a timestamp)
       String timestamp = Timestamp.now().millisecondsSinceEpoch.toString();
@@ -161,17 +161,17 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
       // Upload images to Firebase Storage and get download URLs
       String? image1Url =
-      await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
+          await uploadImageToStorage(_selectedImage1, 'image1_$timestamp');
       String? image2Url =
-      await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
+          await uploadImageToStorage(_selectedImage2, 'image2_$timestamp');
 
       // Initialize the recordingUrl as null
       String? recordingUrl;
 
       // Check if recordingPath is not null before uploading the recording
       if (recordingPath != null) {
-        recordingUrl =
-        await uploadRecordingToStorage(recordingPath!, 'recording_$timestamp');
+        recordingUrl = await uploadRecordingToStorage(
+            recordingPath!, 'recording_$timestamp');
       }
 
       // Add job data to Firestore within the "jobsnew" subcollection
@@ -182,9 +182,12 @@ class _ClientPostJobState extends State<ClientPostJob> {
         'dayCount': dayCount,
         'budget': budget,
         'skills': _skills,
-        'image1Url': image1Url ?? '', // Use an empty string as a default value if null
-        'image2Url': image2Url ?? '', // Use an empty string as a default value if null
-        'recordingUrl': recordingUrl ?? '', // Set to an empty string if no recording URL is available
+        'image1Url':
+            image1Url ?? '', // Use an empty string as a default value if null
+        'image2Url':
+            image2Url ?? '', // Use an empty string as a default value if null
+        'recordingUrl': recordingUrl ??
+            '', // Set to an empty string if no recording URL is available
         'status': 'new', // Set the status to "active"
         'releaseMoney': releaseMoney,
         'Percentage': Percentage, // Fixed typo from Precentage to Percentage
@@ -192,11 +195,8 @@ class _ClientPostJobState extends State<ClientPostJob> {
       });
     } catch (e) {
       // Handle any errors that occur
-      print(e);
     }
   }
-
-
 
 // Request microphone permission
   Future<void> requestPermissions() async {
@@ -303,7 +303,6 @@ class _ClientPostJobState extends State<ClientPostJob> {
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
       return downloadURL;
     } catch (e) {
-      print("File upload error: $e");
       return null;
     }
   }
@@ -931,17 +930,23 @@ class _ClientPostJobState extends State<ClientPostJob> {
                                 DarkMainButton(
                                     title: 'Visit Job Status',
                                     process: () {
-                                      Navigator.of(context).pushReplacement(
+                                      // Navigator.of(context).pushReplacement(
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) => ClientHomePage(
+                                      //       passedIndex: 2,
+                                      //       // selectedIndex: 2,
+                                      //       // client: widget.client,
+                                      //     ),
+                                      //   ),
+                                      // );
+                                      Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
-                                          builder: (context) => ClientHomePage(
-                                            passedIndex: 2,
-                                            // selectedIndex: 2,
-                                            // client: widget.client,
-                                          ),
-                                        ),
+                                            builder: (context) =>
+                                                ClientHomePage(passedIndex: 2)),
+                                        (Route<dynamic> route) => false,
                                       );
                                     },
-                                    screenWidth: screenWidth)
+                                    screenWidth: screenWidth),
                               ],
                             );
                           },

@@ -2,17 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/components/attachment_card.dart';
 import 'package:taskmate/constants.dart';
-import 'package:taskmate/models/client_active_job_details_data.dart';
 
 class ClientJobDetails extends StatefulWidget {
-  // final String documentID;
   final String jobTitle;
   final String jobDescription;
   final String budgetField;
   final QueryDocumentSnapshot activeJobDoc;
-  final String image1Url; // URL for image1
-  final String image2Url; // URL for image2
-  final String createdAt; // Add this parameter
+  final String image1Url;
+  final String image2Url;
+  final String createdAt;
 
   const ClientJobDetails({
     super.key,
@@ -20,10 +18,9 @@ class ClientJobDetails extends StatefulWidget {
     required this.jobDescription,
     required this.budgetField,
     required this.activeJobDoc,
-    required this.image1Url, // Add this parameter
-    required this.image2Url, // Add this parameter
-    required this.createdAt, // Add this parameter
-    // required this.documentID,
+    required this.image1Url,
+    required this.image2Url,
+    required this.createdAt,
   });
 
   @override
@@ -31,8 +28,8 @@ class ClientJobDetails extends StatefulWidget {
 }
 
 class _ClientJobDetailsState extends State<ClientJobDetails> {
-  late final String imageUrl1;
-  late final String imageUrl2;
+  late final String? imageUrl1;
+  late final String? imageUrl2;
 
   @override
   void initState() {
@@ -40,20 +37,18 @@ class _ClientJobDetailsState extends State<ClientJobDetails> {
     imageUrl1 = widget.activeJobDoc['image1Url'];
     imageUrl2 = widget.activeJobDoc['image2Url'];
   }
-  /// Custom method to display an image in full-screen with a black background
+
   void _showFullScreenImage(String imageUrl) {
-    if (imageUrl != null) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: Container(
-            color: Colors.black, // Set background color to black
-            child: Center(
-              child: Image.network(imageUrl),
-            ),
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => Scaffold(
+        body: Container(
+          color: Colors.black,
+          child: Center(
+            child: Image.network(imageUrl),
           ),
         ),
-      ));
-    }
+      ),
+    ));
   }
 
   @override
@@ -74,11 +69,11 @@ class _ClientJobDetailsState extends State<ClientJobDetails> {
             ],
           ),
           Text(
-            widget.jobTitle,
+            'Title',
             style: kJobCardTitleTextStyle.copyWith(color: kJetBlack),
           ),
           Text(
-            'Title goes here...',
+            widget.jobTitle,
             style: kTextStyle,
           ),
           const SizedBox(
@@ -115,17 +110,41 @@ class _ClientJobDetailsState extends State<ClientJobDetails> {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: AttachmentCard(
-                    cardChild: Image.network(imageUrl1), // Display image1 using its URL
-                  ),
+                  child: imageUrl1 != null && imageUrl1!.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () => _showFullScreenImage(imageUrl1!),
+                          child: AttachmentCard(
+                            cardChild: Image.network(imageUrl1!),
+                          ),
+                        )
+                      : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24.0),
+                        child: Text(
+                            'Attachment 1 was not submitted',
+                            textAlign: TextAlign.center,
+                            style: kUserDataGatherTitleTextStyle.copyWith(color: kWarningRedColor),
+                          ),
+                      ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15.0,
                 ),
                 Expanded(
-                  child: AttachmentCard(
-                    cardChild: Image.network(imageUrl2), // Display image2 using its URL
-                  ),
+                  child: imageUrl2 != null && imageUrl2!.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () => _showFullScreenImage(imageUrl2!),
+                          child: AttachmentCard(
+                            cardChild: Image.network(imageUrl2!),
+                          ),
+                        )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                        child: Text(
+                          'Attachment 2 was not submitted',
+                          textAlign: TextAlign.center,
+                          style: kUserDataGatherTitleTextStyle.copyWith(color: kWarningRedColor),
+                          ),
+                      ),
                 ),
               ],
             ),
