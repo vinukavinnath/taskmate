@@ -13,6 +13,8 @@ import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/components/review_card.dart';
 import 'package:taskmate/constants.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskmate/localization/locales.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -27,8 +29,16 @@ class _EditProfileState extends State<EditProfile> {
   //     TextEditingController();
 
   String userId = '';
+  String? _languageCode;
   final picker = ImagePicker();
   late String _imageUrl;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
 
   Future<void> fetchImageURL() async {
     try {
@@ -59,7 +69,7 @@ class _EditProfileState extends State<EditProfile> {
           CusSnackBar(
             backColor: kSuccessGreenColor,
             time: 5,
-            title: 'Uploading...',
+            title: _getTranslatedText('uploading'),
             icon: Icons.upload,
           ),
         );
@@ -100,6 +110,12 @@ class _EditProfileState extends State<EditProfile> {
 
     final Map<String, dynamic> data = document.data() as Map<String, dynamic>;
     return data;
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
   }
 
   @override
@@ -255,9 +271,9 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                           ),
                         ),
-                        const Center(
+                        Center(
                           child: Text(
-                            'Change your profile photo',
+                            _getTranslatedText('cng_prf_phot'),
                             style: kTextStyle,
                           ),
                         ),
@@ -269,13 +285,13 @@ class _EditProfileState extends State<EditProfile> {
                             children: <Widget>[
                               Expanded(
                                 child: LightMainButton(
-                                  title: 'Cancel',
+                                  title: _getTranslatedText('cancel'),
                                   process: _navigateBackwards,
                                 ),
                               ),
                               Expanded(
                                 child: DarkMainButton(
-                                  title: 'Save',
+                                  title: _getTranslatedText('save'),
                                   process: () {
                                     // if (_formKey.currentState!.validate()) {
                                     // Form is valid, proceed with submission or other actions
@@ -298,5 +314,12 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

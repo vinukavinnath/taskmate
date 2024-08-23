@@ -47,28 +47,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCqNE-4n1fGNitvkyZ9-aw-iNIdlyDTG1U',
-    appId: '1:480644203885:web:29f78d79abd7fb7f478664',
-    messagingSenderId: '480644203885',
-    projectId: 'taskmate-4fc48',
-    authDomain: 'taskmate-4fc48.firebaseapp.com',
-    storageBucket: 'taskmate-4fc48.appspot.com',
+    apiKey: 'AIzaSyDXAfnvMdgLnTtQqMZ22uvvy3q_iuTtL6E',
+    appId: '1:399870505448:web:6f6f8c6a2d1717dfd5745d',
+    messagingSenderId: '399870505448',
+    projectId: 'taskmateb2',
+    authDomain: 'taskmateb2.firebaseapp.com',
+    storageBucket: 'taskmateb2.appspot.com',
+    measurementId: 'G-7GYKKMNDC9',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAHRB_sQbwHOLKASu5nltnMSyOlvrGdaGY',
-    appId: '1:480644203885:android:abc3816bf4fa665d478664',
-    messagingSenderId: '480644203885',
-    projectId: 'taskmate-4fc48',
-    storageBucket: 'taskmate-4fc48.appspot.com',
+    apiKey: 'AIzaSyCw0YhGJYyoc6RG_Pb0h20EELyjQGtOrMo',
+    appId: '1:399870505448:android:b509d1fcfbcb0783d5745d',
+    messagingSenderId: '399870505448',
+    projectId: 'taskmateb2',
+    storageBucket: 'taskmateb2.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAHNcQ0XeCY-f2C3U8kHbCLVo3kaIpeX2E',
-    appId: '1:480644203885:ios:d0004884c63c9f4e478664',
-    messagingSenderId: '480644203885',
-    projectId: 'taskmate-4fc48',
-    storageBucket: 'taskmate-4fc48.appspot.com',
+    apiKey: 'AIzaSyAplNcC9JSwW4I6otVCmm1iTjokllyw3Ag',
+    appId: '1:399870505448:ios:a8ac8a12011f5030d5745d',
+    messagingSenderId: '399870505448',
+    projectId: 'taskmateb2',
+    storageBucket: 'taskmateb2.appspot.com',
     iosBundleId: 'com.taskmateapp.taskmate',
   );
 }

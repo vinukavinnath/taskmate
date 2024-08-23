@@ -28,6 +28,7 @@ class _SendMsgState extends State<SendMsg> {
     _loadLanguagePreference();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -88,10 +89,9 @@ class _SendMsgState extends State<SendMsg> {
                   // Check if the job belongs to the current user
                   if (doc.id == userUid) {
                     return StreamBuilder<QuerySnapshot>(
-                      stream: doc.reference
-                          .collection('jobsnew')
-                          .where('status', whereIn: ['active', 'complete'])
-                          .snapshots(),
+                      stream: doc.reference.collection('jobsnew').where(
+                          'status',
+                          whereIn: ['active', 'complete']).snapshots(),
                       builder: (context, subSnapshot) {
                         if (subSnapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -102,13 +102,28 @@ class _SendMsgState extends State<SendMsg> {
 
                         if (!subSnapshot.hasData ||
                             subSnapshot.data!.docs.isEmpty) {
-                          return const Center(
-                            child: Text('No jobs with status "active" or "complete" found'),
+                          // Display GIF and text centered on the screen
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('gifs/messaging.gif'),
+                                  const SizedBox(height: 16.0),
+                                   Text(
+                                    _getTranslatedText('no_msg'),
+                                    style: kSubHeadingTextStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         }
 
                         final jobDocs = subSnapshot.data!.docs;
 
+                        // Display SendJobCards in a ListView
                         return Column(
                           children: jobDocs.map<Widget>((subDoc) {
                             return SendJobCard(activeJobDoc: subDoc);
@@ -127,9 +142,10 @@ class _SendMsgState extends State<SendMsg> {
       ),
     );
   }
+
   String _getTranslatedText(String key) {
     Map<String, dynamic> localizedText =
-    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
     return localizedText[key] ??
         key; // Fallback to the key if the translation is not found
   }

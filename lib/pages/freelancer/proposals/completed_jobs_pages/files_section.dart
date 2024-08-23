@@ -25,23 +25,21 @@ class Files extends StatefulWidget {
 }
 
 class _FilesState extends State<Files> {
-
-/// Custom method to display an image in full-screen with a black background
-  void _showFullScreenImage(String imageUrl) {
-    if (imageUrl != null) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: Container(
-            color: Colors.black, // Set background color to black
-            child: Center(
-              child: Image.network(imageUrl),
-            ),
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.all(10),
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: InteractiveViewer(
+            child: Image.network(imageUrl),
           ),
         ),
-      ));
-    }
+      ),
+    );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -69,35 +67,35 @@ class _FilesState extends State<Files> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _showFullScreenImage(imageUrl3); // Call the _pickImage function when tapped
-                        },
-                        child: imageUrl3 != null
-                            ? Image.network(imageUrl3)
-                            : const Text('Tap Here'),
+                  child: imageUrl3 != null && imageUrl3!.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () =>
+                              _showFullScreenImage(context, imageUrl3!),
+                          child: AttachmentCard(
+                            cardChild: Image.network(imageUrl3!),
+                          ),
+                        )
+                      : Text(
+                          'No Attachment 1 Available',
+                          style: kTextStyle.copyWith(color: kWarningRedColor),
                         ),
-                    ],
-                  ),
                 ),
                 const SizedBox(
                   width: 15.0,
                 ),
                 Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _showFullScreenImage(imageUrl4);
-                        },
-                        child: imageUrl4 != null
-                            ? Image.network(imageUrl4)
-                            : const Text('Tap Here'),
-                      ),
-                    ],
-                  ),
+                  child: imageUrl4 != null && imageUrl4!.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () =>
+                              _showFullScreenImage(context, imageUrl4!),
+                          child: AttachmentCard(
+                            cardChild: Image.network(imageUrl4!),
+                          ),
+                        )
+                      : Text(
+                          'No Attachment 2 Available',
+                          style: kTextStyle.copyWith(color: kWarningRedColor),
+                        ),
                 ),
               ],
             ),

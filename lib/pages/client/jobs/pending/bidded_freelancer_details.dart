@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_title.dart';
 import 'package:taskmate/components/light_main_button.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/pending/bidded_freelancer_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BiddedFreelancerDetails extends StatefulWidget {
   final String bidDescription;
@@ -21,9 +24,8 @@ class BiddedFreelancerDetails extends StatefulWidget {
   final String bio;
   final String hourlyRate;
 
-
-
-  const BiddedFreelancerDetails({ Key? key,
+  const BiddedFreelancerDetails({
+    Key? key,
     required this.bidDescription,
     required this.bidAmount,
     required this.delivery,
@@ -39,31 +41,44 @@ class BiddedFreelancerDetails extends StatefulWidget {
     required this.hourlyRate,
   }) : super(key: key);
 
-
   @override
   State<BiddedFreelancerDetails> createState() =>
       _BiddedFreelancerDetailsState();
 }
 
 class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
+  String? _languageCode;
+
   void navigateToFreelancerProfile() {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => BiddedFreelancerProfile(
-            jobTitle: widget.jobTitle,
-            freelancerName: widget.freelancerName,
-            skills: widget.skills,
-            profilePhotoUrl: widget.profilePhotoUrl,
-            Level: widget.Level,
-            professionalRole: widget.professionalRole,
-            bio: widget.bio,
-            pendingJobDoc: widget.pendingJobDoc,
-            reviewdesfreelancer: widget.reviewdesfreelancer,
-            hourlyRate: widget.hourlyRate,
-
+          jobTitle: widget.jobTitle,
+          freelancerName: widget.freelancerName,
+          skills: widget.skills,
+          profilePhotoUrl: widget.profilePhotoUrl,
+          Level: widget.Level,
+          professionalRole: widget.professionalRole,
+          bio: widget.bio,
+          pendingJobDoc: widget.pendingJobDoc,
+          reviewdesfreelancer: widget.reviewdesfreelancer,
+          hourlyRate: widget.hourlyRate,
         ),
       ),
     );
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
   }
 
   @override
@@ -76,8 +91,8 @@ class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Proposal Details',
+          title: Text(
+            _getTranslatedText('prop_dtsld'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -122,8 +137,12 @@ class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundImage: widget.profilePhotoUrl.isNotEmpty
-                            ? NetworkImage(widget.profilePhotoUrl) as ImageProvider<Object> // Explicitly specify the type
-                            : AssetImage('images/blank_profile.webp') as ImageProvider<Object>, // Explicitly specify the type
+                            ? NetworkImage(widget.profilePhotoUrl)
+                                as ImageProvider<
+                                    Object> // Explicitly specify the type
+                            : AssetImage('images/blank_profile.webp')
+                                as ImageProvider<
+                                    Object>, // Explicitly specify the type
                         radius: 35.0,
                       ),
                       title: Text(
@@ -194,20 +213,23 @@ class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
                     height: 30.0,
                   ),
                   DarkMainButton(
-                    title: 'Hire Now',
+                    title: _getTranslatedText('hire'),
                     process: () async {
                       try {
                         // Update the status to "active" in Firestore
-                        await widget.pendingJobDoc.reference.update({'status': 'active'});
+                        await widget.pendingJobDoc.reference
+                            .update({'status': 'active'});
 
                         // Update the budget in the main document with the bidAmount value
-                        await widget.pendingJobDoc.reference.update({'budget': widget.bidAmount});
+                        await widget.pendingJobDoc.reference
+                            .update({'budget': widget.bidAmount});
 
-                        // Show a SnackBar indicating success
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Freelancer hired successfully!'),
-                            duration: Duration(seconds: 2),
+                          CusSnackBar(
+                            backColor: kSuccessGreenColor,
+                            time: 3,
+                            title: 'Freelancer hired successfully!',
+                            icon: Icons.how_to_reg,
                           ),
                         );
 
@@ -215,19 +237,19 @@ class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
                       } catch (e) {
                         // Handle errors, and show a SnackBar indicating failure
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error hiring freelancer: $e'),
-                            duration: Duration(seconds: 2),
+                          CusSnackBar(
+                            backColor: kWarningRedColor,
+                            time: 3,
+                            title: 'Error hiring Freelancer',
+                            icon: Icons.error,
                           ),
                         );
                       }
                     },
                     screenWidth: screenWidth,
                   ),
-
-
                   LightMainButton(
-                      title: 'View Profile',
+                      title: _getTranslatedText('viw_pro'),
                       process: navigateToFreelancerProfile,
                       screenWidth: screenWidth),
                 ],
@@ -237,5 +259,12 @@ class _BiddedFreelancerDetailsState extends State<BiddedFreelancerDetails> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

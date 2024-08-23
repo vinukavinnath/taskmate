@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/active/client_active_job_files_section.dart';
 import 'package:taskmate/pages/client/jobs/active/client_job_details_section.dart';
 import 'package:taskmate/pages/client/jobs/active/client_active_job_payments_section.dart';
 import 'package:taskmate/pages/client/jobs/active/client_active_job_reviews_section.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class ClientActiveJobDetails extends StatefulWidget {
@@ -39,11 +41,25 @@ class ClientActiveJobDetails extends StatefulWidget {
 
 class _ClientActiveJobDetailsState extends State<ClientActiveJobDetails> {
   int activeJobItemIndex = 0;
+  String? _languageCode;
 
   void _onToggle(int? index) {
     setState(() {
       activeJobItemIndex = index!;
     });
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
   }
 
   @override
@@ -79,8 +95,8 @@ class _ClientActiveJobDetailsState extends State<ClientActiveJobDetails> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Active Jobs',
+          title:  Text(
+            _getTranslatedText('activ_jbs'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -154,5 +170,11 @@ class _ClientActiveJobDetailsState extends State<ClientActiveJobDetails> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/pending/bidded_freelancer_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BiddedFreelancers extends StatefulWidget {
   final QueryDocumentSnapshot pendingjobDoc;
@@ -19,10 +21,19 @@ class BiddedFreelancers extends StatefulWidget {
 
 class _BiddedFreelancersState extends State<BiddedFreelancers> {
   late CollectionReference bidsCollection;
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _loadLanguagePreference();
     bidsCollection = widget.pendingjobDoc.reference.collection('bidsjobs');
   }
 
@@ -34,8 +45,8 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Proposals',
+          title:  Text(
+            _getTranslatedText('proposal'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -96,12 +107,12 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset('gifs/sand_wait.gif'),
-                            const Text(
-                              'No Proposals Yet!',
+                             Text(
+                              _getTranslatedText('no_prp_yet'),
                               style: kHeadingTextStyle,
                             ),
-                            const Text(
-                              'But wait! Still have some Luck!',
+                             Text(
+                              _getTranslatedText('still_luck'),
                               style: kUserDataGatherTitleTextStyle,
                             ),
                           ],
@@ -128,5 +139,11 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

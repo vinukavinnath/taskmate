@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 
 import 'package:taskmate/pages/client/jobs/completed/details_section.dart';
 import 'package:taskmate/pages/client/jobs/completed/files_section.dart';
 import 'package:taskmate/pages/client/jobs/completed/payments_section.dart';
 import 'package:taskmate/pages/client/jobs/completed/reviews_section.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientCompletedJobDetails extends StatefulWidget {
   // final String documentID;
@@ -43,10 +45,18 @@ class ClientCompletedJobDetails extends StatefulWidget {
 
 class _ClientCompletedJobDetailsState extends State<ClientCompletedJobDetails> {
   int activeJobItemIndex = 0;
+  String? _languageCode;
 
   void _onToggle(int? index) {
     setState(() {
       activeJobItemIndex = index!;
+    });
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
     });
   }
 
@@ -84,8 +94,8 @@ class _ClientCompletedJobDetailsState extends State<ClientCompletedJobDetails> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Completed Jobs',
+          title:  Text(
+            _getTranslatedText('comple_jbs'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -159,5 +169,11 @@ class _ClientCompletedJobDetailsState extends State<ClientCompletedJobDetails> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

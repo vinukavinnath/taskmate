@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/freelancer/proposals/completed_jobs_pages/details_section.dart';
 import 'package:taskmate/pages/freelancer/proposals/completed_jobs_pages/files_section.dart';
 import 'package:taskmate/pages/freelancer/proposals/completed_jobs_pages/payments_section.dart';
 import 'package:taskmate/pages/freelancer/proposals/completed_jobs_pages/reviews_section.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class CompletedJobDetails extends StatefulWidget {
@@ -18,8 +20,6 @@ class CompletedJobDetails extends StatefulWidget {
   final String createdAt;
   final String completeJobTime; // Add this parameter
 
-
-
   const CompletedJobDetails({
     super.key,
     required this.jobTitle, // Add this parameter
@@ -27,7 +27,7 @@ class CompletedJobDetails extends StatefulWidget {
     required this.budgetField,
     required this.completeJobDoc,
     required this.image1Url,
-    required  this.image2Url,
+    required this.image2Url,
     required this.createdAt,
     required this.completeJobTime,
 
@@ -40,11 +40,25 @@ class CompletedJobDetails extends StatefulWidget {
 
 class _CompletedJobDetailsState extends State<CompletedJobDetails> {
   int completedJobItemIndex = 0;
+  String? _languageCode;
 
   void _onToggle(int? index) {
     setState(() {
       completedJobItemIndex = index!;
     });
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
   }
 
   @override
@@ -53,20 +67,20 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
     final List completedJobItems = [
       Details(
         jobTitle: widget.jobTitle,
-        jobDescription : widget.jobDescription,
+        jobDescription: widget.jobDescription,
         budgetField: widget.budgetField,
         completeJobDoc: widget.completeJobDoc,
         image1Url: widget.image1Url, // Pass the URL of image1
         image2Url: widget.image2Url, // Pass the URL of image2
-        createdAt:widget.createdAt,
-        completeJobTime:widget.completeJobTime,
-          // documentID: widget.documentID,
-          ),
-       Files(completeJobDoc: widget.completeJobDoc),
-       Payments(
-         budgetField: widget.budgetField,
-         completeJobDoc: widget.completeJobDoc,
-       ),
+        createdAt: widget.createdAt,
+        completeJobTime: widget.completeJobTime,
+        // documentID: widget.documentID,
+      ),
+      Files(completeJobDoc: widget.completeJobDoc),
+      Payments(
+        budgetField: widget.budgetField,
+        completeJobDoc: widget.completeJobDoc,
+      ),
       Reviews(
         completeJobDoc: widget.completeJobDoc,
         // documentID: widget.documentID,
@@ -77,8 +91,8 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Completed Jobs',
+          title: Text(
+            _getTranslatedText('comple_jbs'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -152,5 +166,12 @@ class _CompletedJobDetailsState extends State<CompletedJobDetails> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }
