@@ -92,6 +92,9 @@ mixin LocalData {
 
     // Bottom Nav Bar
 
+    // Messaging
+    'message':'Messages',
+
     // Jobs page
     'projects': 'Projects',
     'tab_bar_1': 'Search',
@@ -194,6 +197,9 @@ mixin LocalData {
     // ################### Freelancer section ##############################
 
     // Bottom Nav Bar
+
+    // Messaging
+    'message':'පණිවිඩ',
 
     // Jobs page
     'projects': 'ව්‍යාපෘති',

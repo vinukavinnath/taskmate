@@ -76,10 +76,11 @@ class _ClientPostJobState extends State<ClientPostJob> {
 
   void selectService(String serviceName) {
     setState(() {
-      _skills.add(serviceName);
+      _skills.add(serviceName.toLowerCase()); // Convert to lowercase before adding
       skillController.text = _skills.join(', '); // Update the text field
     });
   }
+
 
   Future<void> uploadFile(int imageNumber) async {
     try {

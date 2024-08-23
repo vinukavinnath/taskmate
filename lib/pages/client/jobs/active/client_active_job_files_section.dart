@@ -41,6 +41,8 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    final subData = widget.activeJobDoc.data() as Map<String, dynamic>;
+    final jobTitle = subData['jobTitle'] as String;
 
     return SingleChildScrollView(
       child: SizedBox(
@@ -173,6 +175,7 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
                   MaterialPageRoute(
                     builder: (context) => ClientActiveJobsSendMsg(
                       activeJobDoc: widget.activeJobDoc,
+                      jobtitle: jobTitle,
                     ),
                   ),
                 );

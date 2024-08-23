@@ -68,6 +68,7 @@ dependencies:
   just_audio: ^0.9.37
   permission_handler: ^11.0.0
   flutter_localization: ^0.1.14
+  flutter_slidable: ^3.1.1
 
 dev_dependencies:
   flutter_test:

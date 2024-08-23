@@ -43,9 +43,9 @@ class BiddedFreelancerCard extends StatelessWidget {
           return Text('');
         }
 
-        final String firstName = userData['firstName'] ?? '';
+        final String firstName = userData['username'] ?? '';
         final String lastName = userData['lastName'] ?? '';
-        final String freelancerName = (firstName + ' ' + lastName).trim().isEmpty ? 'Freelancer Name' : (firstName + ' ' + lastName).trim();
+        final String freelancerName = (firstName).trim().isEmpty ? 'Freelancer Name' : (firstName).trim();
 
         final String skills = userData['skills'] ?? '';
         final String profilePhotoUrl = userData['profilePhotoUrl'] ?? ''; // Add this line to get the profile photo URL

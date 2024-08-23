@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:taskmate/constants.dart';
 
 class ClientActiveJobsSendMsg extends StatefulWidget {
   final QueryDocumentSnapshot activeJobDoc;
+  final String jobtitle;
 
   const ClientActiveJobsSendMsg({
     Key? key,
     required this.activeJobDoc,
+    required this.jobtitle,
   }) : super(key: key);
 
   @override
-  _ClientActiveJobsSendMsgState createState() => _ClientActiveJobsSendMsgState();
+  _ClientActiveJobsSendMsgState createState() =>
+      _ClientActiveJobsSendMsgState();
 }
 
 class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
@@ -37,7 +41,7 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
         _messageController.clear();
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Message sent successfully'),
             duration: Duration(seconds: 2),
           ),
@@ -46,13 +50,13 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error sending message: $e'),
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter a message'),
           duration: Duration(seconds: 2),
         ),
@@ -64,10 +68,31 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Send Message'),
+        title: Text(
+          widget.jobtitle,
+          style: kSubHeadingTextStyle,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(
+            Icons.navigate_before,
+            color: kDeepBlueColor,
+            size: 40.0,
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            repeat: ImageRepeat.repeat,
+            image: AssetImage('images/noise_image.webp'),
+          ),
+        ),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -78,16 +103,16 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return Center(child: Text('Error loading messages'));
+                    return const Center(child: Text('Error loading messages'));
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   final messages = snapshot.data?.docs ?? [];
 
                   if (messages.isEmpty) {
-                    return Center(child: Text('No messages yet'));
+                    return const Center(child: Text('No messages yet'));
                   }
 
                   return ListView.builder(
@@ -104,24 +129,25 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
                       bool isClient = sender == 'client';
 
                       return Align(
-                        alignment:
-                        isClient ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isClient
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 5.0),
                           padding: const EdgeInsets.all(10.0),
                           decoration: BoxDecoration(
                             color: isClient
-                                ? Color(0xFF5696FA) // Your specified color
-                                : Color(0xFFB4D7FE),
+                                ? const Color(0xFF5696FA) // Your specified color
+                                : const Color(0xFFB4D7FE),
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
+                              topLeft: const Radius.circular(12),
+                              topRight: const Radius.circular(12),
                               bottomLeft: isClient
-                                  ? Radius.circular(12)
-                                  : Radius.circular(0),
+                                  ? const Radius.circular(12)
+                                  : const Radius.circular(0),
                               bottomRight: isClient
-                                  ? Radius.circular(0)
-                                  : Radius.circular(12),
+                                  ? const Radius.circular(0)
+                                  : const Radius.circular(12),
                             ),
                           ),
                           child: Column(
@@ -129,14 +155,14 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
                             children: [
                               Text(
                                 text,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black87,
                                 ),
                               ),
-                              SizedBox(height: 5.0),
+                              const SizedBox(height: 5.0),
                               Text(
                                 time,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 10,
                                   color: Colors.black54,
                                 ),
@@ -155,20 +181,23 @@ class _ClientActiveJobsSendMsgState extends State<ClientActiveJobsSendMsg> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your message...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter your message...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.send),
+                    icon: const Icon(Icons.send),
                     color: Theme.of(context).primaryColor,
                     onPressed: _sendMessage,
                   ),
