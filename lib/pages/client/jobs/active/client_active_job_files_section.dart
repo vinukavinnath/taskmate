@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:taskmate/classes/cus_snackbar.dart';
 import 'package:taskmate/components/attachment_card.dart';
 import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/light_main_button.dart';
@@ -31,6 +32,22 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
   late final String imageUrl3;
   late final String imageUrl4;
 
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.all(10),
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: InteractiveViewer(
+            child: Image.network(imageUrl),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +68,7 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Download Submissions',
+              'Preview Submissions',
               style: kJobCardTitleTextStyle.copyWith(
                 color: kJetBlack,
               ),
@@ -66,30 +83,10 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Open the image in a new screen or show a larger version
-                          // based on your specific requirements.
+                          _showFullScreenImage(context, imageUrl3);
                         },
                         child: AttachmentCard(
                           cardChild: Image.network(imageUrl3),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Trigger the download action
-                          _downloadImage(context, imageUrl3);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.download,
-                              color: kDarkGreyColor,
-                            ),
-                            Text(
-                              'Download',
-                              style: kTextStyle,
-                            )
-                          ],
                         ),
                       ),
                     ],
@@ -103,30 +100,10 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Open the image in a new screen or show a larger version
-                          // based on your specific requirements.
+                          _showFullScreenImage(context, imageUrl4);
                         },
                         child: AttachmentCard(
                           cardChild: Image.network(imageUrl4),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Trigger the download action
-                          _downloadImage(context, imageUrl4);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.download,
-                              color: kDarkGreyColor,
-                            ),
-                            Text(
-                              'Download',
-                              style: kTextStyle,
-                            )
-                          ],
                         ),
                       ),
                     ],
@@ -144,31 +121,31 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
                   // Update the status to "complete" in Firestore
                   await widget.activeJobDoc.reference
                       .update({'status': 'complete'});
-
-                  // TODO: Add any other processing logic if needed
-
                   // Show a SnackBar indicating success
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Job accepted and complete'),
-                      duration: Duration(seconds: 2),
+                    CusSnackBar(
+                      backColor: kSuccessGreenColor,
+                      time: 2,
+                      title: 'Successfully Hired!',
+                      icon: Icons.assignment_turned_in,
                     ),
                   );
                 } catch (e) {
                   // Handle errors, and show a SnackBar indicating failure
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error accepting job: $e'),
-                      duration: Duration(seconds: 2),
+                    CusSnackBar(
+                      backColor: kWarningRedColor,
+                      time: 2,
+                      title: 'Freelancer can\'t be Hired!',
+                      icon: Icons.error,
                     ),
                   );
                 }
               },
               screenWidth: screenWidth,
             ),
-
             LightMainButton(
-              title: 'Message',
+              title: 'Any Revisions?',
               process: () {
                 Navigator.push(
                   context,
@@ -182,7 +159,6 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
               },
               screenWidth: screenWidth,
             )
-
           ],
         ),
       ),
@@ -200,27 +176,22 @@ class _ClientActiveJobFilesState extends State<ClientActiveJobFiles> {
       final response = await dio.download(
         imageUrl,
         savePath,
-        onReceiveProgress: (received, total) {
-          print("Received: $received, Total: $total");
-        },
+        onReceiveProgress: (received, total) {},
       );
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Downloading complete'),
             duration: Duration(seconds: 2),
           ),
         );
-      } else {
-        print('HTTP error: ${response.statusCode}');
-      }
+      } else {}
     } catch (e) {
-      print('Download error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error downloading file: $e'),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }

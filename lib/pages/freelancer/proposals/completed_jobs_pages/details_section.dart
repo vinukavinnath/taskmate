@@ -34,6 +34,22 @@ class _DetailsState extends State<Details> {
   late final String imageUrl1;
   late final String imageUrl2;
 
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: InteractiveViewer(
+            child: Image.network(imageUrl),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -120,18 +136,33 @@ class _DetailsState extends State<Details> {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: AttachmentCard(
-                      cardChild: Image.network(
-                          imageUrl1), // Display image1 using its URL
+                    child: imageUrl1 != null && imageUrl1!.isNotEmpty
+                        ? GestureDetector(
+                      onTap: () => _showFullScreenImage(context,imageUrl1!),
+                      child: AttachmentCard(
+                        cardChild: Image.network(imageUrl1!),
+                      ),
+                    )
+                        : Text(
+                      'No Attachment 1 Available',
+                      style: kTextStyle.copyWith(color: kWarningRedColor),
                     ),
                   ),
+
                   const SizedBox(
                     width: 15.0,
                   ),
                   Expanded(
-                    child: AttachmentCard(
-                      cardChild: Image.network(
-                          imageUrl2), // Display image2 using its URL
+                    child: imageUrl2 != null && imageUrl2!.isNotEmpty
+                        ? GestureDetector(
+                      onTap: () => _showFullScreenImage(context,imageUrl2!),
+                      child: AttachmentCard(
+                        cardChild: Image.network(imageUrl2!),
+                      ),
+                    )
+                        : Text(
+                      'No Attachment 2 Available',
+                      style: kTextStyle.copyWith(color: kWarningRedColor),
                     ),
                   ),
                 ],

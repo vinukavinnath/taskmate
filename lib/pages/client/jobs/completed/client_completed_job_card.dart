@@ -6,7 +6,6 @@ import 'package:taskmate/constants.dart';
 import 'package:taskmate/pages/client/jobs/completed/client_completed_job_details.dart';
 
 class ClientCompletedJobCard extends StatefulWidget {
-
   const ClientCompletedJobCard({
     // required this.documentID,
     Key? key,
@@ -20,8 +19,6 @@ class ClientCompletedJobCard extends StatefulWidget {
 }
 
 class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
-
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -38,12 +35,12 @@ class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
 
     if (completeJobTimeField is Timestamp) {
       DateTime completeJobDateTime = completeJobTimeField.toDate();
-      completeJobTimeString = DateFormat('yyyy-MM-dd HH:mm:ss').format(completeJobDateTime);
+      completeJobTimeString =
+          DateFormat('yyyy-MM-dd HH:mm:ss').format(completeJobDateTime);
     } else if (completeJobTimeField is String) {
       // Assuming CompleteJobTime is stored as a string
       completeJobTimeString = completeJobTimeField;
     }
-
 
     if (budgetField is int) {
       budget = budgetField.toString(); // Convert int to string
@@ -61,11 +58,10 @@ class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
       createdAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(createdAtDateTime);
     }
 
-
-
-
-    String imageUrl1 = subData['imageUrl1'] ?? ''; // Replace 'imageUrl1' with the actual field name
-    String imageUrl2 = subData['imageUrl2'] ?? ''; // Replace 'imageUrl2' with the actual field name
+    String imageUrl1 = subData['imageUrl1'] ??
+        ''; // Replace 'imageUrl1' with the actual field name
+    String imageUrl2 = subData['imageUrl2'] ??
+        ''; // Replace 'imageUrl2' with the actual field name
     String imageUrl3 = subData['imageUrl3'] ?? '';
     String imageUrl4 = subData['imageUrl4'] ?? '';
 
@@ -76,21 +72,21 @@ class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
             builder: (context) => ClientCompletedJobDetails(
               jobTitle: jobTitle, // Pass the jobTitle
               budgetField: budget, // Pass the budget
-              jobDescription : jobDescription,
-              completeJobDoc : widget.completeJobDoc,
+              jobDescription: jobDescription,
+              completeJobDoc: widget.completeJobDoc,
               image1Url: imageUrl1, // Pass the URL of image1
               image2Url: imageUrl2, // Pass the URL of image2),
               image3Url: imageUrl3,
               image4Url: imageUrl4,
               createdAt: createdAt, // Pass the createdAt value
-              completeJobTime: completeJobTimeString, // Pass the CompleteJobTime value
-
+              completeJobTime:
+                  completeJobTimeString, // Pass the CompleteJobTime value
             ),
           ),
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 16.0),
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
         width: screenWidth,
         decoration: BoxDecoration(
@@ -103,11 +99,11 @@ class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text(
+                Text(
                   'Completed on ${completeJobTimeString.toString()} ',
                   style: kTextStyle,
                 ),
-                Icon(
+                const Icon(
                   Icons.arrow_circle_right,
                   color: kDeepBlueColor,
                   size: 25.0,
@@ -124,10 +120,10 @@ class _ClientCompletedJobCardState extends State<ClientCompletedJobCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'From FreelancerName',
-                  style: kJobCardDescriptionTextStyle,
-                ),
+                // const Text(
+                //   'From FreelancerName',
+                //   style: kJobCardDescriptionTextStyle,
+                // ),
                 Text(
                   'Budget LKR.${budget.toString()}',
                   style: kJobCardDescriptionTextStyle,

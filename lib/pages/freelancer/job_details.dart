@@ -318,7 +318,7 @@ class _JobDetailsState extends State<JobDetails> {
                       ),
                     ],
                   )
-                      : const Text("No Recording Found")
+                      : const Text("No Voice Recording Found")
                 ),
                 Align(
                   alignment: Alignment.center,

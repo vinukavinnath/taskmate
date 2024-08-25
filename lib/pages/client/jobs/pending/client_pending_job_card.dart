@@ -57,52 +57,62 @@ class _ClientPendingJobCardState extends State<ClientPendingJobCard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    jobTitle,
-                    style: kJobCardTitleTextStyle,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      jobTitle,
+                      style: kJobCardTitleTextStyle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
-                ),
-                Text(
-                  'Budget LKR.${budget.toString()}',
-                  style: kJobCardDescriptionTextStyle,
-                ),
-                Text(
-                  'Posted on: ${createdAt}',
-                  style: kJobCardDescriptionTextStyle,
-                ),
-                FutureBuilder<QuerySnapshot>(
-                  future: bidsCollection.get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
+                  Text(
+                    'Budget LKR.${budget.toString()}',
+                    style: kJobCardDescriptionTextStyle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  Text(
+                    'Posted on: ${createdAt}',
+                    style: kJobCardDescriptionTextStyle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  FutureBuilder<QuerySnapshot>(
+                    future: bidsCollection.get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
 
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
 
-                    final numBids = snapshot.data?.docs.length ?? 0;
+                      final numBids = snapshot.data?.docs.length ?? 0;
 
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Proposals: $numBids',
-                          style: kJobCardDescriptionTextStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: kDeepBlueColor,
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Proposals: $numBids',
+                            style: kJobCardDescriptionTextStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: kDeepBlueColor,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
             const Icon(
               Icons.navigate_next,
@@ -111,6 +121,7 @@ class _ClientPendingJobCardState extends State<ClientPendingJobCard> {
           ],
         ),
       ),
+
     );
   }
 }

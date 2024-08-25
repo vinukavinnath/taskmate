@@ -209,8 +209,8 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
-                        const UserDataGatherTitle(
-                          title: 'Reviews',
+                         UserDataGatherTitle(
+                          title: _getTranslatedText('rws'),
                         ),
                         const ReviewCard(
                           imagePath: 'images/freelancer0.webp',
@@ -223,7 +223,7 @@ class _ProfileState extends State<Profile> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
                           child: DarkMainButton(
-                              title: 'Edit Profile',
+                              title: _getTranslatedText('edt_prf'),
                               process: _navigateToEditProfile,
                               screenWidth: screenWidth),
                         )

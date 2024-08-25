@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/pending/bidded_freelancer_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BiddedFreelancers extends StatefulWidget {
   final QueryDocumentSnapshot pendingjobDoc;
@@ -11,9 +13,7 @@ class BiddedFreelancers extends StatefulWidget {
     Key? key,
     required this.pendingjobDoc,
     required this.jobTitle,
-
   }) : super(key: key);
-
 
   @override
   State<BiddedFreelancers> createState() => _BiddedFreelancersState();
@@ -21,22 +21,32 @@ class BiddedFreelancers extends StatefulWidget {
 
 class _BiddedFreelancersState extends State<BiddedFreelancers> {
   late CollectionReference bidsCollection;
+  String? _languageCode;
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    _loadLanguagePreference();
     bidsCollection = widget.pendingjobDoc.reference.collection('bidsjobs');
   }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Proposals',
+          title:  Text(
+            _getTranslatedText('proposal'),
             style: kHeadingTextStyle,
           ),
           elevation: 4.0,
@@ -80,24 +90,47 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
                   future: bidsCollection.get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
 
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     }
-                    // Process and display your data here
-                    List<QueryDocumentSnapshot> bidDocuments = snapshot.data!.docs;
 
-                    return Column(
-                      children: bidDocuments.map((bidDoc) {
-                        return BiddedFreelancerCard(
-                            bidDoc: bidDoc,
-                           jobTitle: widget.jobTitle,
-                          pendingjobDoc: widget.pendingjobDoc,
-                        );
-                      }).toList(),
-                    );
+                    // Process and display your data here
+                    List<QueryDocumentSnapshot> bidDocuments =
+                        snapshot.data?.docs ?? [];
+
+                    if (bidDocuments.isEmpty) {
+                      return Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('gifs/sand_wait.gif'),
+                             Text(
+                              _getTranslatedText('no_prp_yet'),
+                              style: kHeadingTextStyle,
+                            ),
+                             Text(
+                              _getTranslatedText('still_luck'),
+                              style: kUserDataGatherTitleTextStyle,
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Expanded(
+                        child: ListView(
+                          children: bidDocuments.map((bidDoc) {
+                            return BiddedFreelancerCard(
+                              bidDoc: bidDoc,
+                              jobTitle: widget.jobTitle,
+                              pendingjobDoc: widget.pendingjobDoc,
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
@@ -106,5 +139,11 @@ class _BiddedFreelancersState extends State<BiddedFreelancers> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

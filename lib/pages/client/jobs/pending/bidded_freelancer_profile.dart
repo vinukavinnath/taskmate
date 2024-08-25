@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:taskmate/components/attachment_card.dart';
-import 'package:taskmate/components/dark_main_button.dart';
 import 'package:taskmate/components/freelancer/user_data_gather_title.dart';
 import 'package:taskmate/components/review_card.dart';
 import 'package:taskmate/constants.dart';
-import 'package:taskmate/dashboard/freelancer/dashboard.dart';
 import 'package:taskmate/dashboard/freelancer/edit_profile.dart';
 //import 'package:taskmate/messaging/Chatscreen.dart';
 
@@ -94,7 +91,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
+                          children: const [
                             // Padding(
                             //   padding: const EdgeInsets.all(8.0),
                             //   child: ElevatedButton(
@@ -137,7 +134,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
+                              children: const [
                                 Icon(
                                   Icons.navigate_before,
                                   size: 35.0,
@@ -165,7 +162,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                           ? NetworkImage(widget.profilePhotoUrl)
                               as ImageProvider<
                                   Object> // Explicitly specify the type
-                          : AssetImage('images/blank_profile.webp')
+                          : const AssetImage('images/blank_profile.webp')
                               as ImageProvider<
                                   Object>, // Explicitly specify the type
                       radius: 40,
@@ -173,24 +170,27 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                   ),
                 ],
               ),
-              Column(
-                children: [
-                  Text(
-                    widget.freelancerName,
-                    style: kSubHeadingTextStyle,
-                  ),
-                  Text(
-                    widget.Level,
-                    style: kTextStyle.copyWith(color: kOceanBlueColor),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      'Professional Role - ${widget.professionalRole}',
-                      textAlign: TextAlign.center,
+              Center(
+                child: Column(
+                  // crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.freelancerName,
+                      style: kSubHeadingTextStyle,
                     ),
-                  ),
-                ],
+                    Text(
+                      widget.Level,
+                      style: kTextStyle.copyWith(color: kOceanBlueColor),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        'Professional Role - ${widget.professionalRole}',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Expanded(
                 child: ListView(
@@ -223,7 +223,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                             ),
                           ),
                         ),
-                        UserDataGatherTitle(
+                        const UserDataGatherTitle(
                           title: 'Portfolio',
                         ),
                         SingleChildScrollView(
@@ -233,7 +233,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                             children: [
                               Padding(
                                 padding:
-                                    EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
+                                    const EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     // Get the current user
@@ -312,7 +312,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                   Column(
                                                     children: [
                                                       images[j],
-                                                      SizedBox(height: 8.0),
+                                                      const SizedBox(height: 8.0),
                                                     ],
                                                   ),
                                                 );
@@ -320,7 +320,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                 if (j < i + imagesPerRow - 1) {
                                                   // Add spacing between images in the same row
                                                   rowChildren.add(
-                                                    SizedBox(width: 16.0),
+                                                    const SizedBox(width: 16.0),
                                                   );
                                                 }
                                               }
@@ -344,8 +344,8 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                     width:
                                                         600, // Adjust the width as needed
                                                     padding:
-                                                        EdgeInsets.all(16.0),
-                                                    decoration: BoxDecoration(
+                                                        const EdgeInsets.all(16.0),
+                                                    decoration: const BoxDecoration(
                                                       image: DecorationImage(
                                                         image: AssetImage(
                                                             'images/noise_image.webp'), // Add your background image here
@@ -359,21 +359,21 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                       children: [
                                                         Text(
                                                           title,
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                             fontSize: 18.0,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 8.0),
+                                                        const SizedBox(height: 8.0),
                                                         Text(
                                                             'Description: $itemDescription'),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         // Display the rows of images
                                                         Column(
                                                           children: imageRows,
                                                         ),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         ElevatedButton(
                                                           onPressed: () {
                                                             Navigator.of(
@@ -461,7 +461,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                           height:
                                               8.0), // Add spacing between the box and text
                                       Text(
@@ -477,7 +477,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                               ),
                               Padding(
                                 padding:
-                                    EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
+                                    const EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     // Get the current user
@@ -556,7 +556,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                   Column(
                                                     children: [
                                                       images[j],
-                                                      SizedBox(height: 8.0),
+                                                      const SizedBox(height: 8.0),
                                                     ],
                                                   ),
                                                 );
@@ -564,7 +564,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                 if (j < i + imagesPerRow - 1) {
                                                   // Add spacing between images in the same row
                                                   rowChildren.add(
-                                                    SizedBox(width: 16.0),
+                                                    const SizedBox(width: 16.0),
                                                   );
                                                 }
                                               }
@@ -588,8 +588,8 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                     width:
                                                         600, // Adjust the width as needed
                                                     padding:
-                                                        EdgeInsets.all(16.0),
-                                                    decoration: BoxDecoration(
+                                                        const EdgeInsets.all(16.0),
+                                                    decoration: const BoxDecoration(
                                                       image: DecorationImage(
                                                         image: AssetImage(
                                                             'images/noise_image.webp'), // Add your background image here
@@ -603,21 +603,21 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                       children: [
                                                         Text(
                                                           title,
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                             fontSize: 18.0,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 8.0),
+                                                        const SizedBox(height: 8.0),
                                                         Text(
                                                             'Description: $itemDescription'),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         // Display the rows of images
                                                         Column(
                                                           children: imageRows,
                                                         ),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         ElevatedButton(
                                                           onPressed: () {
                                                             Navigator.of(
@@ -705,7 +705,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                           height:
                                               8.0), // Add spacing between the box and text
                                       Text(
@@ -721,7 +721,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                               ),
                               Padding(
                                 padding:
-                                    EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
+                                    const EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     // Get the current user
@@ -800,7 +800,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                   Column(
                                                     children: [
                                                       images[j],
-                                                      SizedBox(height: 8.0),
+                                                      const SizedBox(height: 8.0),
                                                     ],
                                                   ),
                                                 );
@@ -808,7 +808,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                 if (j < i + imagesPerRow - 1) {
                                                   // Add spacing between images in the same row
                                                   rowChildren.add(
-                                                    SizedBox(width: 16.0),
+                                                    const SizedBox(width: 16.0),
                                                   );
                                                 }
                                               }
@@ -832,8 +832,8 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                     width:
                                                         600, // Adjust the width as needed
                                                     padding:
-                                                        EdgeInsets.all(16.0),
-                                                    decoration: BoxDecoration(
+                                                        const EdgeInsets.all(16.0),
+                                                    decoration: const BoxDecoration(
                                                       image: DecorationImage(
                                                         image: AssetImage(
                                                             'images/noise_image.webp'), // Add your background image here
@@ -847,21 +847,21 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                       children: [
                                                         Text(
                                                           title,
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                             fontSize: 18.0,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 8.0),
+                                                        const SizedBox(height: 8.0),
                                                         Text(
                                                             'Description: $itemDescription'),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         // Display the rows of images
                                                         Column(
                                                           children: imageRows,
                                                         ),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         ElevatedButton(
                                                           onPressed: () {
                                                             Navigator.of(
@@ -949,7 +949,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                           height:
                                               8.0), // Add spacing between the box and text
                                       Text(
@@ -965,7 +965,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                               ),
                               Padding(
                                 padding:
-                                    EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
+                                    const EdgeInsets.fromLTRB(35.0, 10.0, 10.0, 10.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     // Get the current user
@@ -1044,7 +1044,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                   Column(
                                                     children: [
                                                       images[j],
-                                                      SizedBox(height: 8.0),
+                                                      const SizedBox(height: 8.0),
                                                     ],
                                                   ),
                                                 );
@@ -1052,7 +1052,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                 if (j < i + imagesPerRow - 1) {
                                                   // Add spacing between images in the same row
                                                   rowChildren.add(
-                                                    SizedBox(width: 16.0),
+                                                    const SizedBox(width: 16.0),
                                                   );
                                                 }
                                               }
@@ -1076,8 +1076,8 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                     width:
                                                         600, // Adjust the width as needed
                                                     padding:
-                                                        EdgeInsets.all(16.0),
-                                                    decoration: BoxDecoration(
+                                                        const EdgeInsets.all(16.0),
+                                                    decoration: const BoxDecoration(
                                                       image: DecorationImage(
                                                         image: AssetImage(
                                                             'images/noise_image.webp'), // Add your background image here
@@ -1091,22 +1091,22 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                                       children: [
                                                         Text(
                                                           title,
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                             fontSize: 18.0,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 8.0),
+                                                        const SizedBox(height: 8.0),
                                                         Text(
                                                             'Description: $itemDescription'),
 
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         // Display the rows of images
                                                         Column(
                                                           children: imageRows,
                                                         ),
-                                                        SizedBox(height: 16.0),
+                                                        const SizedBox(height: 16.0),
                                                         ElevatedButton(
                                                           onPressed: () {
                                                             Navigator.of(
@@ -1194,7 +1194,7 @@ class _BiddedFreelancerProfileState extends State<BiddedFreelancerProfile> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                           height:
                                               8.0), // Add spacing between the box and text
                                       Text(

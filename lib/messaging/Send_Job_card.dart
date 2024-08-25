@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:taskmate/classes/cus_snackbar.dart';
 
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/client/jobs/active/client_active_jobs_sendmsg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SendJobCard extends StatefulWidget {
   SendJobCard({
@@ -20,6 +22,21 @@ class SendJobCard extends StatefulWidget {
 
 class _SendJobCardState extends State<SendJobCard> {
   bool isVisible = true;
+  String? _languageCode;
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+  
+  @override
+  void initState() {
+    _loadLanguagePreference();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -74,7 +91,7 @@ class _SendJobCardState extends State<SendJobCard> {
                 CusSnackBar(
                   backColor: kSuccessGreenColor,
                   time: 3,
-                  title: 'You\'ve Completed this Job',
+                  title: _getTranslatedText('completed_job'),
                   icon: Icons.task,
                 ),
               );
@@ -148,5 +165,11 @@ class _SendJobCardState extends State<SendJobCard> {
         ),
       ),
     );
+  }
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+    _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

@@ -1,29 +1,39 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskmate/constants.dart';
+import 'package:taskmate/localization/locales.dart';
 import 'package:taskmate/pages/freelancer/proposals/active_jobs_pages/active_jobs.dart';
 import 'package:taskmate/pages/freelancer/proposals/completed_jobs_pages/completed_jobs.dart';
 import 'package:taskmate/pages/freelancer/proposals/pending_jobs_pages/pending_jobs.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class Proposals extends StatefulWidget {
-   Proposals({super.key});
+  Proposals({super.key});
 
   @override
   State<Proposals> createState() => _ProposalsState();
 }
 
 class _ProposalsState extends State<Proposals> {
+  String? _languageCode;
   int proposalItemIndex = 0;
 
-  final List<Widget> _proposalItems =  [
+  final List<Widget> _proposalItems = [
     ActiveJobs(),
     PendingJobs(),
     CompletedJobs(),
   ];
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _languageCode = prefs.getString('language_code') ?? 'en';
+    });
+  }
+
   void _onToggle(int? index) {
     setState(() {
+      _loadLanguagePreference();
       proposalItemIndex = index!;
     });
   }
@@ -37,8 +47,8 @@ class _ProposalsState extends State<Proposals> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Proposals',
+          title: Text(
+            _getTranslatedText('proposal'),
             style: kHeadingTextStyle,
           ),
           elevation: 0,
@@ -101,5 +111,12 @@ class _ProposalsState extends State<Proposals> {
         ),
       ),
     );
+  }
+
+  String _getTranslatedText(String key) {
+    Map<String, dynamic> localizedText =
+        _languageCode == 'en' ? LocalData.EN : LocalData.SI;
+    return localizedText[key] ??
+        key; // Fallback to the key if the translation is not found
   }
 }

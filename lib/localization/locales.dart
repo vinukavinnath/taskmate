@@ -20,6 +20,12 @@ mixin LocalData {
     'cancel': 'Cancel',
     'pls_ent_eml': 'Please enter the Email',
     'wait': 'Please wait. . . ',
+    'uploading':'Uploading',
+    'save':'Save',
+    'activ_jbs':'Active Jobs',
+    'comple_jbs':'Completed Jobs',
+
+
 
     // Greetings
     'morning': 'Good Morning!',
@@ -28,6 +34,7 @@ mixin LocalData {
 
     // Alerts
     'usr_n_avl': 'User isn\'t available',
+    'completed_job':'You\'ve Completed this Job',
 
     // Forgot Password page
     'fgt_ttl': 'Forgot Password',
@@ -51,6 +58,7 @@ mixin LocalData {
     // Profile
     'rws': 'Reviews',
     'edt_prf': 'Edit Profile',
+    'cng_prf_phot':'Change your profile photo',
 
     // Help and Support
     'hlp_ttl': 'Help & Support',
@@ -88,12 +96,24 @@ mixin LocalData {
         'Publishing a job on our platform is not just a task, it\'s an opportunity to connect with the best freelancers in the industry. We\'ve made it easier and friendlier than ever.',
     'clnt_pstd_crd_btn': 'Post a Job',
 
+    // Client Proposal
+    'jobs':'Jobs',
+    'proposal':'Proposals',
+    'no_prp_yet':'No Proposals Yet!',
+    'still_luck':'But wait! Still have some Luck!',
+    'prop_dtsld':'Proposal Details',
+    'hire':'Hire Now',
+    'viw_pro':'View Porfile',
+
     // ################### Freelancer section ##############################
 
     // Bottom Nav Bar
 
     // Messaging
     'message':'Messages',
+  'no_msg':'Still no Messages!',
+    'active':'Active',
+    'completed':'Completed',
 
     // Jobs page
     'projects': 'Projects',
@@ -126,6 +146,11 @@ mixin LocalData {
     'cancel': 'අවලංගු කරන්න',
     'pls_ent_eml': 'කරුණාකර විද්‍යුත් තැපෑල ඇතුලත් කරන්න',
     'wait': 'කරුණාකර රැඳී සිටින්න. . .',
+    'uploading':'උඩුගත කරමින්. . .',
+    'save':'සුරකින්න',
+
+    'activ_jbs':'සක්රීය රැකියා',
+    'comple_jbs':'සම්පූර්ණ කළ රැකියා',
 
     // Greetings
     'morning': 'සුභ උදෑසනක්!',
@@ -134,6 +159,7 @@ mixin LocalData {
 
     // Alerts
     'usr_n_avl': 'පරිශීලක නොමැත',
+    'completed_job':'ඔබ මෙම කාර්යය සම්පූර්ණ කර ඇත',
 
     // Forgot Password page
     'fgt_ttl': 'මුරපදය අමතක විය',
@@ -157,6 +183,7 @@ mixin LocalData {
     // Profile
     'rws': 'සමාලෝචන',
     'edt_prf': 'පැතිකඩ සංස්කරණය කරන්න',
+    'cng_prf_phot':'ඔබගේ පැතිකඩ ඡායාරූපය වෙනස් කරන්න',
 
     // Help and Support
     'hlp_ttl': 'උදව් සහ සහාය',
@@ -193,6 +220,15 @@ mixin LocalData {
     'clnt_pstd_crd_des':
         'අපගේ වේදිකාවේ රැකියාවක් ප්‍රකාශයට පත් කිරීම කාර්යයක් පමණක් නොවේ, එය කර්මාන්තයේ හොඳම නිදහස් සේවකයින් සමඟ සම්බන්ධ වීමට අවස්ථාවකි. අපි එය වෙන කවරදාටත් වඩා පහසු සහ මිත්‍රශීලී කර ඇත.',
     'clnt_pstd_crd_btn': 'රැකියාවක් පළ කරන්න',
+
+    // Client Proposal
+    'jobs':'රැකියා',
+    'proposal':'යෝජනා',
+    'no_prp_yet':'තවම යෝජනා නැත!',
+    'still_luck':'නමුත් ඉන්න! තවමත් වාසනාව තිබේ!',
+    'prop_dtsld':'යෝජනා විස්තර',
+    'hire':'දැන් කුලියට ගන්න',
+    'viw_pro':'පැතිකඩ බලන්න',
 
     // ################### Freelancer section ##############################
 
